@@ -1,0 +1,595 @@
+// ============================================
+// Little Chefs Weekly - Application Logic
+// ============================================
+
+(function () {
+  "use strict";
+
+  const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const TOTAL_WEEKS = 8;
+
+  let currentWeek = 0;
+  let weekPlans = [];
+
+  // ─── ROTATION ENGINE ──────────────────────────────
+  // Generates non-repeating weekly plans with palate expansion
+
+  function generateAllWeeks() {
+    const usedIds = new Set();
+    weekPlans = [];
+
+    for (let w = 0; w < TOTAL_WEEKS; w++) {
+      const plan = generateWeekPlan(usedIds, w);
+      weekPlans.push(plan);
+    }
+  }
+
+  function generateWeekPlan(usedIds, weekIndex) {
+    const available = RECIPES.filter(r => !usedIds.has(r.id));
+
+    // If we've used all recipes, reset pool (for weeks > recipe count / 14)
+    if (available.length < 14) {
+      usedIds.clear();
+      return generateWeekPlan(usedIds, weekIndex);
+    }
+
+    const weekPlan = [];
+
+    // Ensure cuisine balance: each week should have Italian, Japanese, Chinese, and adventure/comfort
+    const cuisineTargets = {
+      italian: { min: 3, max: 5 },
+      japanese: { min: 3, max: 5 },
+      chinese: { min: 3, max: 5 },
+      comfort: { min: 1, max: 2 },
+      adventure: { min: 1, max: 3 }
+    };
+
+    // Calculate palate expansion: later weeks introduce more "adventure" tagged recipes
+    const adventureBoost = Math.min(weekIndex * 0.5, 2);
+
+    // Separate recipes by meal suitability
+    const lunchRecipes = available.filter(r => r.meal === "lunch" || r.meal === "both");
+    const dinnerRecipes = available.filter(r => r.meal === "dinner" || r.meal === "both");
+
+    const selected = [];
+    const selectedIds = new Set();
+
+    for (let d = 0; d < 7; d++) {
+      // Determine target cuisine distribution
+      const targetCuisines = getCuisineTargetForDay(d, weekIndex);
+
+      // Select lunch
+      const lunch = selectRecipe(lunchRecipes, selectedIds, targetCuisines[0], adventureBoost);
+      if (lunch) {
+        selected.push(lunch);
+        selectedIds.add(lunch.id);
+      }
+
+      // Select dinner
+      const dinner = selectRecipe(dinnerRecipes, selectedIds, targetCuisines[1], adventureBoost);
+      if (dinner) {
+        selected.push(dinner);
+        selectedIds.add(dinner.id);
+      }
+
+      weekPlan.push({
+        day: DAYS[d],
+        lunch: lunch || lunchRecipes[0],
+        dinner: dinner || dinnerRecipes[0]
+      });
+    }
+
+    // Mark all selected recipes as used
+    selected.forEach(r => usedIds.add(r.id));
+
+    return weekPlan;
+  }
+
+  function getCuisineTargetForDay(dayIndex, weekIndex) {
+    // Rotate cuisines across the week for variety
+    const pattern = [
+      ["italian", "japanese"],
+      ["chinese", "comfort"],
+      ["japanese", "italian"],
+      ["italian", "chinese"],
+      ["chinese", "japanese"],
+      ["adventure", "italian"],
+      ["japanese", "chinese"]
+    ];
+
+    // Shift pattern based on week to avoid same day always having same cuisine
+    const shifted = (dayIndex + weekIndex) % 7;
+    return pattern[shifted];
+  }
+
+  function selectRecipe(pool, excludeIds, preferredCuisine, adventureBoost) {
+    const available = pool.filter(r => !excludeIds.has(r.id));
+    if (available.length === 0) return null;
+
+    // Score recipes
+    const scored = available.map(r => {
+      let score = Math.random() * 10; // base randomness
+
+      // Cuisine match bonus
+      if (r.cuisine === preferredCuisine) score += 15;
+
+      // Adventure bonus for palate expansion (increases over weeks)
+      if (r.tags.includes("new") || r.tags.includes("adventure")) {
+        score += adventureBoost * 3;
+      }
+
+      // Variety in food types (soups, noodles, rice, potato)
+      if (r.tags.includes("soup")) score += 2;
+      if (r.tags.includes("noodle")) score += 2;
+      if (r.tags.includes("rice")) score += 2;
+      if (r.tags.includes("potato")) score += 2;
+
+      return { recipe: r, score };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+    // Pick from top 3 for some controlled randomness
+    const topN = Math.min(3, scored.length);
+    const pick = Math.floor(Math.random() * topN);
+    return scored[pick].recipe;
+  }
+
+  // ─── GROCERY LIST GENERATOR ───────────────────────
+
+  function generateGroceryList(weekPlan) {
+    const storeGroups = {
+      "little-farms": {},
+      "talula-farms": {},
+      "zairyo": {}
+    };
+
+    weekPlan.forEach(day => {
+      [day.lunch, day.dinner].forEach(recipe => {
+        if (!recipe) return;
+        recipe.ingredients.forEach(ing => {
+          const store = getStoreForIngredient(ing);
+          const category = getIngredientCategory(ing.item);
+
+          if (!storeGroups[store]) storeGroups[store] = {};
+          if (!storeGroups[store][category]) storeGroups[store][category] = {};
+
+          // Aggregate quantities
+          if (storeGroups[store][category][ing.item]) {
+            storeGroups[store][category][ing.item].recipes.push(recipe.name);
+          } else {
+            storeGroups[store][category][ing.item] = {
+              qty: ing.qty,
+              recipes: [recipe.name]
+            };
+          }
+        });
+      });
+    });
+
+    return storeGroups;
+  }
+
+  // ─── UI RENDERING ─────────────────────────────────
+
+  function renderWeekLabel() {
+    document.getElementById("week-label").textContent = `Week ${currentWeek + 1}`;
+    const startDate = getWeekStartDate(currentWeek);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 6);
+    document.getElementById("week-date-range").textContent =
+      `${formatDate(startDate)} - ${formatDate(endDate)}`;
+  }
+
+  function getWeekStartDate(weekIndex) {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+    monday.setDate(monday.getDate() + weekIndex * 7);
+    return monday;
+  }
+
+  function formatDate(date) {
+    return date.toLocaleDateString("en-SG", { day: "numeric", month: "short" });
+  }
+
+  function renderMealPlan() {
+    const grid = document.getElementById("meal-plan-grid");
+    const plan = weekPlans[currentWeek];
+
+    grid.innerHTML = plan.map(day => `
+      <div class="day-card">
+        <div class="day-header">${day.day}</div>
+        <div class="meal-slot" data-recipe-id="${day.lunch.id}">
+          <div class="meal-type">Lunch</div>
+          <div class="meal-name">${day.lunch.name}</div>
+          <div class="meal-tags">
+            ${day.lunch.tags.map(t => `<span class="tag tag-${t}">${t}</span>`).join("")}
+          </div>
+          <div class="meal-time">${day.lunch.time} mins</div>
+        </div>
+        <div class="meal-slot" data-recipe-id="${day.dinner.id}">
+          <div class="meal-type">Dinner</div>
+          <div class="meal-name">${day.dinner.name}</div>
+          <div class="meal-tags">
+            ${day.dinner.tags.map(t => `<span class="tag tag-${t}">${t}</span>`).join("")}
+          </div>
+          <div class="meal-time">${day.dinner.time} mins</div>
+        </div>
+      </div>
+    `).join("");
+
+    // Attach click handlers
+    grid.querySelectorAll(".meal-slot").forEach(slot => {
+      slot.addEventListener("click", () => {
+        const id = slot.getAttribute("data-recipe-id");
+        showRecipeDetail(id);
+      });
+    });
+  }
+
+  function renderGroceryList() {
+    const container = document.getElementById("grocery-stores");
+    const plan = weekPlans[currentWeek];
+    const groceryData = generateGroceryList(plan);
+
+    container.innerHTML = Object.entries(STORES).map(([storeKey, storeMeta]) => {
+      const categories = groceryData[storeKey] || {};
+      const categoryEntries = Object.entries(categories).filter(([, items]) => Object.keys(items).length > 0);
+
+      if (categoryEntries.length === 0) return "";
+
+      return `
+        <div class="store-card">
+          <div class="store-header ${storeMeta.cssClass}">
+            <span>${storeMeta.name}</span>
+            <span class="store-tagline">${storeMeta.tagline}</span>
+          </div>
+          ${categoryEntries.map(([category, items]) => `
+            <div class="grocery-category">
+              <h4>${category}</h4>
+              ${Object.entries(items).map(([itemName, info]) => `
+                <div class="grocery-item">
+                  <span class="grocery-item-name">${itemName}</span>
+                  <span class="grocery-item-qty">${info.qty}${info.recipes.length > 1 ? ` (x${info.recipes.length})` : ""}</span>
+                </div>
+              `).join("")}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }).join("");
+  }
+
+  function showRecipeDetail(recipeId) {
+    const recipe = RECIPES.find(r => r.id === recipeId);
+    if (!recipe) return;
+
+    const modal = document.getElementById("recipe-modal");
+    const detail = document.getElementById("recipe-detail");
+
+    detail.innerHTML = `
+      <h2 class="recipe-title">${recipe.name}</h2>
+      <div class="recipe-meta">
+        <span>${recipe.time} minutes</span>
+        <span>${recipe.cuisine.charAt(0).toUpperCase() + recipe.cuisine.slice(1)}</span>
+        <span>${recipe.meal === "both" ? "Lunch or Dinner" : recipe.meal.charAt(0).toUpperCase() + recipe.meal.slice(1)}</span>
+      </div>
+      <p style="margin-bottom: 1rem; color: var(--clr-text-light); font-size: 0.9rem;">${recipe.description}</p>
+
+      <div class="recipe-section">
+        <h3>Ingredients</h3>
+        <ul>
+          ${recipe.ingredients.map(i => `
+            <li>${i.item} - ${i.qty} <span style="font-size:0.75rem; color:var(--clr-text-light)">(${STORES[getStoreForIngredient(i)].name})</span></li>
+          `).join("")}
+        </ul>
+      </div>
+
+      <div class="recipe-section">
+        <h3>Steps</h3>
+        <ol>
+          ${recipe.steps.map(s => `<li>${s}</li>`).join("")}
+        </ol>
+      </div>
+
+      <div class="recipe-tips">
+        <strong>Toddler Tips:</strong> ${recipe.tips}
+      </div>
+    `;
+
+    modal.classList.remove("hidden");
+  }
+
+  // ─── PDF GENERATION ───────────────────────────────
+
+  function generateMealPlanPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const plan = weekPlans[currentWeek];
+
+    // Title
+    doc.setFontSize(20);
+    doc.setTextColor(61, 64, 91);
+    doc.text("Little Chefs Weekly", 105, 20, { align: "center" });
+    doc.setFontSize(11);
+    doc.setTextColor(107, 107, 107);
+    doc.text(`Week ${currentWeek + 1} Meal Plan`, 105, 28, { align: "center" });
+
+    const startDate = getWeekStartDate(currentWeek);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 6);
+    doc.text(`${formatDate(startDate)} - ${formatDate(endDate)}`, 105, 34, { align: "center" });
+
+    // Meal plan table
+    const tableData = plan.map(day => [
+      day.day,
+      `${day.lunch.name}\n(${day.lunch.cuisine}, ${day.lunch.time} mins)`,
+      `${day.dinner.name}\n(${day.dinner.cuisine}, ${day.dinner.time} mins)`
+    ]);
+
+    doc.autoTable({
+      head: [["Day", "Lunch", "Dinner"]],
+      body: tableData,
+      startY: 42,
+      styles: { fontSize: 9, cellPadding: 4 },
+      headStyles: { fillColor: [61, 64, 91] },
+      columnStyles: {
+        0: { cellWidth: 30, fontStyle: "bold" },
+        1: { cellWidth: 75 },
+        2: { cellWidth: 75 }
+      }
+    });
+
+    // Add recipes detail pages
+    plan.forEach((day, i) => {
+      [day.lunch, day.dinner].forEach((recipe, mealIdx) => {
+        doc.addPage();
+        const mealType = mealIdx === 0 ? "Lunch" : "Dinner";
+
+        doc.setFontSize(14);
+        doc.setTextColor(224, 122, 95);
+        doc.text(`${day.day} - ${mealType}`, 14, 20);
+
+        doc.setFontSize(16);
+        doc.setTextColor(61, 64, 91);
+        doc.text(recipe.name, 14, 30);
+
+        doc.setFontSize(9);
+        doc.setTextColor(107, 107, 107);
+        doc.text(`${recipe.cuisine} | ${recipe.time} mins | ${recipe.description}`, 14, 37, { maxWidth: 180 });
+
+        // Ingredients
+        let y = 48;
+        doc.setFontSize(11);
+        doc.setTextColor(224, 122, 95);
+        doc.text("Ingredients", 14, y);
+        y += 6;
+
+        doc.setFontSize(9);
+        doc.setTextColor(45, 45, 45);
+        recipe.ingredients.forEach(ing => {
+          const store = STORES[getStoreForIngredient(ing)].name;
+          doc.text(`\u2022  ${ing.item} - ${ing.qty} (${store})`, 16, y);
+          y += 5;
+        });
+
+        // Steps
+        y += 4;
+        doc.setFontSize(11);
+        doc.setTextColor(224, 122, 95);
+        doc.text("Steps", 14, y);
+        y += 6;
+
+        doc.setFontSize(9);
+        doc.setTextColor(45, 45, 45);
+        recipe.steps.forEach((step, idx) => {
+          const lines = doc.splitTextToSize(`${idx + 1}. ${step}`, 170);
+          lines.forEach(line => {
+            if (y > 275) { doc.addPage(); y = 20; }
+            doc.text(line, 16, y);
+            y += 5;
+          });
+          y += 2;
+        });
+
+        // Tips
+        y += 4;
+        if (y > 260) { doc.addPage(); y = 20; }
+        doc.setFillColor(253, 245, 230);
+        const tipLines = doc.splitTextToSize(`Toddler Tips: ${recipe.tips}`, 166);
+        doc.rect(14, y - 4, 180, tipLines.length * 5 + 8, "F");
+        doc.setFontSize(9);
+        doc.setTextColor(107, 107, 107);
+        tipLines.forEach(line => {
+          doc.text(line, 18, y + 2);
+          y += 5;
+        });
+      });
+    });
+
+    doc.save(`Little_Chefs_Week_${currentWeek + 1}_Recipes.pdf`);
+  }
+
+  function generateGroceryPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const plan = weekPlans[currentWeek];
+    const groceryData = generateGroceryList(plan);
+
+    doc.setFontSize(20);
+    doc.setTextColor(61, 64, 91);
+    doc.text("Little Chefs Weekly", 105, 20, { align: "center" });
+    doc.setFontSize(11);
+    doc.setTextColor(107, 107, 107);
+    doc.text(`Week ${currentWeek + 1} - Grocery Lists`, 105, 28, { align: "center" });
+
+    let isFirst = true;
+
+    Object.entries(STORES).forEach(([storeKey, storeMeta]) => {
+      const categories = groceryData[storeKey] || {};
+      const categoryEntries = Object.entries(categories).filter(([, items]) => Object.keys(items).length > 0);
+      if (categoryEntries.length === 0) return;
+
+      if (!isFirst) doc.addPage();
+      isFirst = false;
+
+      // Store header
+      const colors = {
+        "little-farms": [45, 106, 79],
+        "talula-farms": [127, 79, 36],
+        "zairyo": [155, 34, 38]
+      };
+      const c = colors[storeKey] || [61, 64, 91];
+
+      doc.setFillColor(c[0], c[1], c[2]);
+      doc.rect(0, 38, 210, 12, "F");
+      doc.setFontSize(14);
+      doc.setTextColor(255, 255, 255);
+      doc.text(`${storeMeta.name}`, 14, 46);
+      doc.setFontSize(8);
+      doc.text(storeMeta.tagline, 196, 46, { align: "right" });
+
+      let y = 58;
+
+      categoryEntries.forEach(([category, items]) => {
+        if (y > 265) { doc.addPage(); y = 20; }
+
+        doc.setFontSize(10);
+        doc.setTextColor(c[0], c[1], c[2]);
+        doc.text(category.toUpperCase(), 14, y);
+        y += 2;
+        doc.setDrawColor(200, 200, 200);
+        doc.line(14, y, 196, y);
+        y += 5;
+
+        doc.setFontSize(9);
+        doc.setTextColor(45, 45, 45);
+
+        Object.entries(items).forEach(([itemName, info]) => {
+          if (y > 275) { doc.addPage(); y = 20; }
+          const qtyText = info.recipes.length > 1 ? `${info.qty} (x${info.recipes.length})` : info.qty;
+          doc.text(`\u2610  ${itemName}`, 16, y);
+          doc.setTextColor(130, 130, 130);
+          doc.text(qtyText, 196, y, { align: "right" });
+          doc.setTextColor(45, 45, 45);
+          y += 6;
+        });
+
+        y += 4;
+      });
+    });
+
+    doc.save(`Little_Chefs_Week_${currentWeek + 1}_Grocery.pdf`);
+  }
+
+  // ─── SHARE FUNCTIONALITY ──────────────────────────
+
+  function shareWeek() {
+    // Encode current week and seed in URL for sharing
+    const url = new URL(window.location.href);
+    url.searchParams.set("week", currentWeek);
+    url.searchParams.set("seed", weekSeed);
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url.toString()).then(() => showToast("Link copied to clipboard!"));
+    } else {
+      // Fallback
+      const textArea = document.createElement("textarea");
+      textArea.value = url.toString();
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      showToast("Link copied to clipboard!");
+    }
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.remove("hidden");
+    setTimeout(() => toast.classList.add("hidden"), 3000);
+  }
+
+  // ─── SEEDED RANDOM FOR REPRODUCIBLE PLANS ─────────
+
+  let weekSeed = Date.now();
+
+  function seededRandom(seed) {
+    let s = seed;
+    return function () {
+      s = (s * 1664525 + 1013904223) & 0xffffffff;
+      return (s >>> 0) / 0xffffffff;
+    };
+  }
+
+  // ─── INITIALIZATION ───────────────────────────────
+
+  function init() {
+    // Check URL params for shared state
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("week")) {
+      currentWeek = parseInt(params.get("week"), 10) || 0;
+    }
+    if (params.has("seed")) {
+      weekSeed = parseInt(params.get("seed"), 10) || Date.now();
+    }
+
+    generateAllWeeks();
+    renderWeekLabel();
+    renderMealPlan();
+    renderGroceryList();
+
+    // Event listeners
+    document.getElementById("btn-prev-week").addEventListener("click", () => {
+      if (currentWeek > 0) {
+        currentWeek--;
+        renderWeekLabel();
+        renderMealPlan();
+        renderGroceryList();
+      }
+    });
+
+    document.getElementById("btn-next-week").addEventListener("click", () => {
+      if (currentWeek < TOTAL_WEEKS - 1) {
+        currentWeek++;
+        renderWeekLabel();
+        renderMealPlan();
+        renderGroceryList();
+      }
+    });
+
+    document.getElementById("btn-regenerate").addEventListener("click", () => {
+      weekSeed = Date.now();
+      generateAllWeeks();
+      renderMealPlan();
+      renderGroceryList();
+      showToast("Menu regenerated with new recipes!");
+    });
+
+    document.getElementById("btn-download-pdf").addEventListener("click", generateMealPlanPDF);
+    document.getElementById("btn-download-grocery-pdf").addEventListener("click", generateGroceryPDF);
+    document.getElementById("btn-share").addEventListener("click", shareWeek);
+
+    // Tabs
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(`tab-${tab.dataset.tab}`).classList.add("active");
+      });
+    });
+
+    // Modal
+    const modal = document.getElementById("recipe-modal");
+    modal.querySelector(".modal-backdrop").addEventListener("click", () => modal.classList.add("hidden"));
+    modal.querySelector(".modal-close").addEventListener("click", () => modal.classList.add("hidden"));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") modal.classList.add("hidden");
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
