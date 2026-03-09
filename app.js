@@ -24,6 +24,21 @@
     }
   }
 
+  // ─── INGREDIENT OVERLAP HELPERS ──────────────────
+  // Extract normalised ingredient names from a recipe for overlap scoring
+  function getIngredientKeys(recipe) {
+    return recipe.ingredients.map(i => i.item.toLowerCase().replace(/\s*\(.*?\)\s*/g, "").trim());
+  }
+
+  // Score how many ingredients a candidate recipe shares with the already-selected set
+  function ingredientOverlapScore(candidate, selectedRecipes) {
+    if (selectedRecipes.length === 0) return 0;
+    const candidateKeys = getIngredientKeys(candidate);
+    const poolKeys = new Set();
+    selectedRecipes.forEach(r => getIngredientKeys(r).forEach(k => poolKeys.add(k)));
+    return candidateKeys.filter(k => poolKeys.has(k)).length;
+  }
+
   function generateWeekPlan(usedIds, weekIndex) {
     const available = RECIPES.filter(r => !usedIds.has(r.id));
 
@@ -34,15 +49,6 @@
     }
 
     const weekPlan = [];
-
-    // Ensure cuisine balance: each week should have Italian, Japanese, Chinese, and adventure/comfort
-    const cuisineTargets = {
-      italian: { min: 3, max: 5 },
-      japanese: { min: 3, max: 5 },
-      chinese: { min: 3, max: 5 },
-      comfort: { min: 1, max: 2 },
-      adventure: { min: 1, max: 3 }
-    };
 
     // Calculate palate expansion: later weeks introduce more "adventure" tagged recipes
     const adventureBoost = Math.min(weekIndex * 0.5, 2);
@@ -58,15 +64,15 @@
       // Determine target cuisine distribution
       const targetCuisines = getCuisineTargetForDay(d, weekIndex);
 
-      // Select lunch
-      const lunch = selectRecipe(lunchRecipes, selectedIds, targetCuisines[0], adventureBoost);
+      // Select lunch (with ingredient overlap scoring)
+      const lunch = selectRecipe(lunchRecipes, selectedIds, targetCuisines[0], adventureBoost, selected);
       if (lunch) {
         selected.push(lunch);
         selectedIds.add(lunch.id);
       }
 
-      // Select dinner
-      const dinner = selectRecipe(dinnerRecipes, selectedIds, targetCuisines[1], adventureBoost);
+      // Select dinner (with ingredient overlap scoring)
+      const dinner = selectRecipe(dinnerRecipes, selectedIds, targetCuisines[1], adventureBoost, selected);
       if (dinner) {
         selected.push(dinner);
         selectedIds.add(dinner.id);
@@ -102,16 +108,16 @@
     return pattern[shifted];
   }
 
-  function selectRecipe(pool, excludeIds, preferredCuisine, adventureBoost) {
+  function selectRecipe(pool, excludeIds, preferredCuisine, adventureBoost, selectedSoFar) {
     const available = pool.filter(r => !excludeIds.has(r.id));
     if (available.length === 0) return null;
 
     // Score recipes
     const scored = available.map(r => {
-      let score = Math.random() * 10; // base randomness
+      let score = Math.random() * 5; // base randomness (reduced to let overlap dominate)
 
       // Cuisine match bonus
-      if (r.cuisine === preferredCuisine) score += 15;
+      if (r.cuisine === preferredCuisine) score += 12;
 
       // Adventure bonus for palate expansion (increases over weeks)
       if (r.tags.includes("new") || r.tags.includes("adventure")) {
@@ -123,6 +129,11 @@
       if (r.tags.includes("noodle")) score += 2;
       if (r.tags.includes("rice")) score += 2;
       if (r.tags.includes("potato")) score += 2;
+
+      // INGREDIENT OVERLAP BONUS — strongly prefer recipes sharing ingredients
+      // with those already selected for this week (reduces waste, maximises freshness)
+      const overlap = ingredientOverlapScore(r, selectedSoFar || []);
+      score += overlap * 4; // each shared ingredient adds significant weight
 
       return { recipe: r, score };
     });
@@ -218,6 +229,32 @@
         </div>
       </div>
     `).join("");
+
+    // Show ingredient overlap stats
+    const plan = weekPlans[currentWeek];
+    const allIngredients = [];
+    const uniqueIngredients = new Set();
+    plan.forEach(day => {
+      [day.lunch, day.dinner].forEach(recipe => {
+        recipe.ingredients.forEach(ing => {
+          const key = ing.item.toLowerCase().replace(/\s*\(.*?\)\s*/g, "").trim();
+          allIngredients.push(key);
+          uniqueIngredients.add(key);
+        });
+      });
+    });
+    const reusedCount = allIngredients.length - uniqueIngredients.size;
+    const overlapPct = Math.round((reusedCount / allIngredients.length) * 100);
+
+    // Insert or update the freshness banner
+    let banner = document.getElementById("freshness-banner");
+    if (!banner) {
+      banner = document.createElement("div");
+      banner.id = "freshness-banner";
+      grid.parentNode.insertBefore(banner, grid);
+    }
+    banner.className = "freshness-banner";
+    banner.innerHTML = `<span class="freshness-icon">&#127807;</span> <strong>${overlapPct}% ingredient overlap</strong> this week &mdash; ${uniqueIngredients.size} unique items across 14 meals means less waste &amp; fresher food!`;
 
     // Attach click handlers
     grid.querySelectorAll(".meal-slot").forEach(slot => {
