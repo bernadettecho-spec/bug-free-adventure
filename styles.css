@@ -1,10 +1,10 @@
 /* ============================================
    Little Chefs Weekly - Recipe Dashboard Styles
-   Vibrant, kid-friendly design with food doodles
+   Clean cream background with hand-drawn easter egg doodles
    ============================================ */
 
 :root {
-  --clr-bg: #fff8f0;
+  --clr-bg: #fdf6ee;
   --clr-card: #ffffff;
   --clr-primary: #ff6b6b;
   --clr-primary-dark: #e84545;
@@ -34,29 +34,134 @@ body {
   color: var(--clr-text);
   line-height: 1.5;
   min-height: 100vh;
+}
+
+/* ─── HAND-DRAWN DOODLE SVGs (wobbly crayon style) ─── */
+/* These are inline SVGs designed to look like a toddler drew them with crayons */
+
+/* Wobbly spaghetti doodle - hidden in the header's right corner */
+header {
+  position: relative;
+  overflow: hidden;
+}
+header::after {
+  content: "";
+  position: absolute;
+  right: -10px;
+  bottom: -8px;
+  width: 120px;
+  height: 100px;
+  opacity: 0.15;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100'%3E%3Cpath d='M30 20 Q35 10 45 25 Q55 40 50 50 Q45 60 55 70 Q65 80 60 85' fill='none' stroke='%23ffcc5c' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M40 15 Q50 5 55 20 Q60 35 65 45 Q70 55 68 65 Q66 75 70 82' fill='none' stroke='%23ff6b6b' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M50 22 Q55 12 62 28 Q69 44 72 52 Q75 60 73 68' fill='none' stroke='%23ffcc5c' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='85' cy='60' r='18' fill='none' stroke='%23ffffff' stroke-width='3' stroke-dasharray='4 6'/%3E%3Ccircle cx='85' cy='60' r='8' fill='none' stroke='%23ffffff' stroke-width='2.5'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+/* Wobbly carrot + sun doodle - easter egg in the footer */
+footer {
   position: relative;
 }
-
-/* ─── FOOD DOODLE BACKGROUND ─────────────────────── */
-body::before {
+footer::before {
   content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 40px;
+  opacity: 0.18;
   pointer-events: none;
-  opacity: 0.06;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ctext x='10' y='35' font-size='28'%3E%F0%9F%8D%95%3C/text%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ctext x='10' y='35' font-size='28'%3E%F0%9F%8D%9C%3C/text%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ctext x='10' y='35' font-size='28'%3E%F0%9F%8D%99%3C/text%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ctext x='10' y='35' font-size='28'%3E%F0%9F%A5%A6%3C/text%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ctext x='10' y='35' font-size='28'%3E%F0%9F%A5%95%3C/text%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ctext x='10' y='35' font-size='28'%3E%F0%9F%8D%A3%3C/text%3E%3C/svg%3E");
-  background-size: 120px 120px, 140px 140px, 100px 100px, 130px 130px, 110px 110px, 150px 150px;
-  background-position: 0 0, 60px 70px, 30px 140px, 90px 30px, 10px 90px, 120px 120px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40'%3E%3C!-- wobbly carrot --%3E%3Cpath d='M30 8 Q33 5 36 8 L35 10 Q34 12 33 10 Z' fill='%234ecdc4' stroke='%234ecdc4' stroke-width='1'/%3E%3Cpath d='M28 10 Q30 8 35 11 Q37 15 36 22 Q34 30 33 35 Q32 30 30 22 Q28 15 28 10Z' fill='%23ff6b6b' stroke='%23e84545' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cline x1='31' y1='15' x2='33' y2='14' stroke='%23e84545' stroke-width='1'/%3E%3Cline x1='31' y1='20' x2='34' y2='19' stroke='%23e84545' stroke-width='1'/%3E%3C!-- wobbly sun --%3E%3Ccircle cx='100' cy='18' r='8' fill='%23ffcc5c' stroke='%23ffbe0b' stroke-width='2'/%3E%3Cline x1='100' y1='5' x2='101' y2='8' stroke='%23ffbe0b' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='100' y1='28' x2='99' y2='32' stroke='%23ffbe0b' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='88' y1='18' x2='85' y2='17' stroke='%23ffbe0b' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='112' y1='18' x2='115' y2='19' stroke='%23ffbe0b' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='91' y1='10' x2='89' y2='7' stroke='%23ffbe0b' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='109' y1='10' x2='112' y2='8' stroke='%23ffbe0b' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='91' y1='26' x2='88' y2='29' stroke='%23ffbe0b' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='109' y1='26' x2='111' y2='30' stroke='%23ffbe0b' stroke-width='2' stroke-linecap='round'/%3E%3C!-- wobbly apple --%3E%3Cpath d='M168 12 Q170 5 172 8' fill='none' stroke='%234ecdc4' stroke-width='1.5' stroke-linecap='round'/%3E%3Cellipse cx='170' cy='22' rx='10' ry='12' fill='%23ff6b6b' stroke='%23e84545' stroke-width='1.5'/%3E%3Cpath d='M165 17 Q170 14 175 17' fill='none' stroke='%23e84545' stroke-width='1'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
 }
 
-body > * { position: relative; z-index: 1; }
+/* Wobbly rice bowl doodle - easter egg peeking from day card #3 corner */
+.day-card:nth-child(3) {
+  position: relative;
+}
+.day-card:nth-child(3)::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  width: 44px;
+  height: 36px;
+  opacity: 0.14;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 36'%3E%3Cpath d='M8 16 Q6 24 10 28 Q16 33 22 33 Q28 33 34 28 Q38 24 36 16Z' fill='%23ffffff' stroke='%235b5ea6' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cellipse cx='22' cy='16' rx='16' ry='5' fill='%23ffffff' stroke='%235b5ea6' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='12' r='2' fill='%235b5ea6'/%3E%3Ccircle cx='22' cy='10' r='2' fill='%235b5ea6'/%3E%3Ccircle cx='28' cy='12' r='2' fill='%235b5ea6'/%3E%3Ccircle cx='19' cy='8' r='1.5' fill='%235b5ea6'/%3E%3Ccircle cx='25' cy='8' r='1.5' fill='%235b5ea6'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+/* Wobbly pizza slice - easter egg peeking from day card #6 corner */
+.day-card:nth-child(6) {
+  position: relative;
+}
+.day-card:nth-child(6)::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  width: 40px;
+  height: 40px;
+  opacity: 0.14;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M20 5 L5 35 Q12 37 20 36 Q28 37 35 35 Z' fill='%23ffcc5c' stroke='%23e84545' stroke-width='2.5' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='22' r='3' fill='%23ff6b6b' stroke='%23e84545' stroke-width='1'/%3E%3Ccircle cx='24' cy='25' r='3' fill='%23ff6b6b' stroke='%23e84545' stroke-width='1'/%3E%3Ccircle cx='20' cy='15' r='2.5' fill='%23ff6b6b' stroke='%23e84545' stroke-width='1'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+/* Wobbly broccoli - easter egg in the freshness banner */
+.freshness-banner {
+  position: relative;
+  overflow: hidden;
+}
+.freshness-banner::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  opacity: 0.2;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M20 38 L20 22' stroke='%232d5a0f' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M20 28 L15 24' stroke='%232d5a0f' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M20 26 L25 22' stroke='%232d5a0f' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='14' cy='14' r='7' fill='%239be36d' stroke='%233a7d13' stroke-width='2'/%3E%3Ccircle cx='26' cy='14' r='7' fill='%239be36d' stroke='%233a7d13' stroke-width='2'/%3E%3Ccircle cx='20' cy='9' r='7' fill='%239be36d' stroke='%233a7d13' stroke-width='2'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+/* Wobbly noodle swirl - easter egg in the recipe modal */
+.modal-content {
+  position: relative;
+}
+.modal-content::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  width: 50px;
+  height: 45px;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'%3E%3Cpath d='M10 35 Q8 25 15 20 Q22 15 25 22 Q28 29 22 32 Q16 35 18 28' fill='none' stroke='%23ffcc5c' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M25 38 Q30 30 35 25 Q40 20 38 15 Q36 10 30 12' fill='none' stroke='%23ff6b6b' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='40' cy='35' r='2' fill='%234ecdc4'/%3E%3Ccircle cx='8' cy='38' r='1.5' fill='%234ecdc4'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+/* Wobbly onigiri (triangle rice ball) - easter egg on store card #1 */
+.store-card:first-child {
+  position: relative;
+}
+.store-card:first-child::after {
+  content: "";
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  opacity: 0.12;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath d='M18 4 Q12 16 6 28 Q12 32 18 32 Q24 32 30 28 Q24 16 18 4Z' fill='%23ffffff' stroke='%235b5ea6' stroke-width='2.5' stroke-linejoin='round'/%3E%3Crect x='8' y='22' width='20' height='10' rx='2' fill='%232d2d2d' stroke='%232d2d2d' stroke-width='1'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
 
 /* Header */
 header {
@@ -235,7 +340,7 @@ header h1::before { content: "\1F468\200D\1F373 "; }
   background: var(--clr-card);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  overflow: hidden;
+  overflow: visible;
   border: 2px solid transparent;
   transition: all 0.2s;
 }
@@ -253,6 +358,7 @@ header h1::before { content: "\1F468\200D\1F373 "; }
   background: linear-gradient(135deg, var(--clr-secondary), #7c7fe0);
   color: white;
   letter-spacing: 0.5px;
+  border-radius: 14px 14px 0 0;
 }
 
 /* Alternate day header colours for playfulness */
@@ -339,7 +445,7 @@ header h1::before { content: "\1F468\200D\1F373 "; }
   background: var(--clr-card);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  overflow: hidden;
+  overflow: visible;
   border: 2px solid transparent;
   transition: all 0.2s;
 }
@@ -356,6 +462,7 @@ header h1::before { content: "\1F468\200D\1F373 "; }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-radius: 14px 14px 0 0;
 }
 
 .store-header.little-farms { background: linear-gradient(135deg, #2d6a4f, #52b788); }
@@ -541,7 +648,7 @@ header h1::before { content: "\1F468\200D\1F373 "; }
 /* Footer */
 footer {
   text-align: center;
-  padding: 2rem;
+  padding: 2.5rem 2rem 2rem;
   color: var(--clr-text-light);
   font-size: 0.8rem;
 }
@@ -556,6 +663,7 @@ footer {
   .meal-plan-grid { grid-template-columns: 1fr; }
   .grocery-stores { grid-template-columns: 1fr; }
   .nav-extras { margin-left: 0; width: 100%; justify-content: space-between; }
+  header::after { display: none; }
 }
 
 @media print {

@@ -231,7 +231,6 @@
     `).join("");
 
     // Show ingredient overlap stats
-    const plan = weekPlans[currentWeek];
     const allIngredients = [];
     const uniqueIngredients = new Set();
     plan.forEach(day => {
