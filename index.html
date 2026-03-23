@@ -10,6 +10,18 @@
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Supabase JS Client (loaded from CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- ─── YOUR SUPABASE CONFIG ────────────────────────
+       Replace these with your own values from supabase.com
+       See SETUP.md for step-by-step instructions.
+       These are SAFE to put in HTML — they are public "anon" keys. -->
+  <script>
+    window.SUPABASE_URL = "";  // e.g. "https://abc123xyz.supabase.co"
+    window.SUPABASE_KEY = "";  // e.g. "eyJhbGciOiJIUzI1NiIs..."
+  </script>
 </head>
 <body>
   <header>
@@ -18,6 +30,9 @@
       <p class="subtitle">30-Minute Recipes for Adventurous Little Eaters (Ages 2-4)</p>
     </div>
     <div class="header-actions">
+      <span id="user-label" class="user-label hidden"></span>
+      <button id="btn-auth" class="btn btn-outline">Log In</button>
+      <button id="btn-preferences" class="btn btn-outline" title="Set your family's preferences">Preferences</button>
       <button id="btn-share" class="btn btn-outline" title="Copy shareable link">Share</button>
       <button id="btn-download-pdf" class="btn btn-primary">Download PDF</button>
     </div>
@@ -64,6 +79,126 @@
     </div>
   </div>
 
+  <!-- ─── AUTH MODAL ───────────────────────────────── -->
+  <div id="auth-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content auth-modal-content">
+      <button class="modal-close">&times;</button>
+      <h2 class="auth-title">Welcome to Little Chefs</h2>
+      <p class="auth-subtitle">Log in to save your preferences across devices</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Log In</button>
+        <button class="auth-tab" data-tab="signup">Sign Up</button>
+      </div>
+
+      <form id="auth-form-login" class="auth-form active">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Your password" required>
+        </div>
+        <p id="login-error" class="auth-error"></p>
+        <button type="submit" class="btn btn-primary btn-full">Log In</button>
+      </form>
+
+      <form id="auth-form-signup" class="auth-form">
+        <div class="form-group">
+          <label for="signup-name">Your name</label>
+          <input type="text" id="signup-name" placeholder="e.g. Sarah" required>
+        </div>
+        <div class="form-group">
+          <label for="signup-email">Email</label>
+          <input type="email" id="signup-email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="signup-password">Password</label>
+          <input type="password" id="signup-password" placeholder="At least 6 characters" required minlength="6">
+        </div>
+        <p id="signup-error" class="auth-error"></p>
+        <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── PREFERENCES MODAL ───────────────────────── -->
+  <div id="preferences-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content prefs-modal-content">
+      <button class="modal-close">&times;</button>
+      <h2 class="prefs-title">Family Preferences</h2>
+      <p class="prefs-subtitle">Customise meal plans for your little chefs</p>
+
+      <!-- Max Cook Time -->
+      <div class="pref-section">
+        <label class="pref-label">Maximum cooking time</label>
+        <div class="pref-slider-row">
+          <input type="range" id="pref-max-time" min="10" max="60" step="5" value="30" class="pref-slider">
+          <span id="pref-max-time-label" class="pref-slider-value">30 mins</span>
+        </div>
+      </div>
+
+      <!-- Cuisines -->
+      <div class="pref-section">
+        <label class="pref-label">Cuisines to include</label>
+        <div class="pref-checkboxes">
+          <label class="pref-checkbox">
+            <input type="checkbox" id="pref-cuisine-italian" checked>
+            <span class="pref-checkbox-label">Italian</span>
+          </label>
+          <label class="pref-checkbox">
+            <input type="checkbox" id="pref-cuisine-japanese" checked>
+            <span class="pref-checkbox-label">Japanese</span>
+          </label>
+          <label class="pref-checkbox">
+            <input type="checkbox" id="pref-cuisine-chinese" checked>
+            <span class="pref-checkbox-label">Chinese</span>
+          </label>
+          <label class="pref-checkbox">
+            <input type="checkbox" id="pref-cuisine-comfort" checked>
+            <span class="pref-checkbox-label">Comfort Food</span>
+          </label>
+          <label class="pref-checkbox">
+            <input type="checkbox" id="pref-cuisine-adventure">
+            <span class="pref-checkbox-label">Adventure</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Adventure Level -->
+      <div class="pref-section">
+        <label class="pref-label">How adventurous is your little eater?</label>
+        <div class="pref-slider-row">
+          <span class="pref-slider-hint">Cautious</span>
+          <input type="range" id="pref-adventure" min="1" max="3" step="1" value="1" class="pref-slider">
+          <span class="pref-slider-hint">Adventurous</span>
+        </div>
+        <div class="pref-adventure-desc" id="pref-adventure-label">Cautious</div>
+      </div>
+
+      <!-- Excluded Ingredients -->
+      <div class="pref-section">
+        <label class="pref-label">Ingredients to avoid (allergies, dislikes)</label>
+        <div class="pref-exclude-input">
+          <input type="text" id="input-excluded" placeholder="e.g. peanut butter, tofu">
+          <button type="button" id="btn-add-excluded" class="btn btn-small btn-primary">Add</button>
+        </div>
+        <div id="excluded-ingredients-list" class="excluded-list">
+          <span class="no-exclusions">None — all ingredients included</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="pref-actions">
+        <button id="btn-save-preferences" class="btn btn-primary btn-full">Save & Update Meals</button>
+        <button id="btn-share-preferences" class="btn btn-outline btn-full" style="margin-top: 0.5rem;">Copy Shareable Link</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Share Toast -->
   <div id="toast" class="toast hidden">Link copied to clipboard!</div>
 
@@ -72,6 +207,8 @@
   </footer>
 
   <script src="recipes.js"></script>
+  <script src="preferences.js"></script>
+  <script src="supabase-auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -11,6 +11,43 @@
   let currentWeek = 0;
   let weekPlans = [];
 
+  // ─── PREFERENCES HELPERS ───────────────────────────
+  // Get the current user preferences (from preferences.js module)
+  function getPrefs() {
+    if (window.LittleChefsPrefs && window.LittleChefsPrefs.getPreferences) {
+      return window.LittleChefsPrefs.getPreferences();
+    }
+    // Fallback defaults if preferences module not loaded
+    return {
+      maxCookTime: 30,
+      cuisines: { italian: true, japanese: true, chinese: true, comfort: true, adventure: false },
+      adventureLevel: 1,
+      excludedIngredients: []
+    };
+  }
+
+  function isRecipeAllowed(recipe) {
+    const prefs = getPrefs();
+
+    // Filter by cook time
+    if (recipe.time > prefs.maxCookTime) return false;
+
+    // Filter by enabled cuisines
+    if (!prefs.cuisines[recipe.cuisine]) return false;
+
+    // Filter by excluded ingredients
+    if (prefs.excludedIngredients.length > 0) {
+      const hasExcluded = recipe.ingredients.some(ing =>
+        prefs.excludedIngredients.some(excl =>
+          ing.item.toLowerCase().includes(excl.toLowerCase())
+        )
+      );
+      if (hasExcluded) return false;
+    }
+
+    return true;
+  }
+
   // ─── ROTATION ENGINE ──────────────────────────────
   // Generates non-repeating weekly plans with palate expansion
 
@@ -40,18 +77,24 @@
   }
 
   function generateWeekPlan(usedIds, weekIndex) {
-    const available = RECIPES.filter(r => !usedIds.has(r.id));
+    const available = RECIPES.filter(r => !usedIds.has(r.id) && isRecipeAllowed(r));
 
-    // If we've used all recipes, reset pool (for weeks > recipe count / 14)
+    // If we've used all allowed recipes, reset pool
     if (available.length < 14) {
       usedIds.clear();
+      const retryAvailable = RECIPES.filter(r => isRecipeAllowed(r));
+      // If still not enough recipes after clearing, relax time filter
+      if (retryAvailable.length < 14) {
+        return generateWeekPlanFallback(weekIndex);
+      }
       return generateWeekPlan(usedIds, weekIndex);
     }
 
     const weekPlan = [];
 
-    // Calculate palate expansion: later weeks introduce more "adventure" tagged recipes
-    const adventureBoost = Math.min(weekIndex * 0.5, 2);
+    // Calculate palate expansion: combines user preference with week progression
+    const prefs = getPrefs();
+    const adventureBoost = Math.min(weekIndex * 0.5, 2) * (prefs.adventureLevel / 2);
 
     // Separate recipes by meal suitability
     const lunchRecipes = available.filter(r => r.meal === "lunch" || r.meal === "both");
@@ -560,9 +603,72 @@
     };
   }
 
+  // ─── FALLBACK PLAN (when not enough recipes match filters) ─────
+
+  function generateWeekPlanFallback(weekIndex) {
+    // Use all recipes of enabled cuisines, ignoring time filter
+    const prefs = getPrefs();
+    const available = RECIPES.filter(r => prefs.cuisines[r.cuisine]);
+    const weekPlan = [];
+    for (let d = 0; d < 7; d++) {
+      const lunch = available[(d * 2) % available.length];
+      const dinner = available[(d * 2 + 1) % available.length];
+      weekPlan.push({ day: DAYS[d], lunch, dinner });
+    }
+    return weekPlan;
+  }
+
+  // ─── PUBLIC API (for auth and preferences modules) ─
+
+  window.LittleChefs = {
+    showToast: null, // set in init
+    regenerateWithPreferences: null, // set in init
+    loadPreferencesFromCloud: null,
+    resetPreferences: null
+  };
+
   // ─── INITIALIZATION ───────────────────────────────
 
   function init() {
+    // Expose public API
+    window.LittleChefs.showToast = showToast;
+    window.LittleChefs.regenerateWithPreferences = function () {
+      weekSeed = Date.now();
+      generateAllWeeks();
+      renderMealPlan();
+      renderGroceryList();
+    };
+    window.LittleChefs.loadPreferencesFromCloud = async function () {
+      if (window.LittleChefsPrefs && window.LittleChefsPrefs.loadFromCloud) {
+        await window.LittleChefsPrefs.loadFromCloud();
+      }
+    };
+    window.LittleChefs.resetPreferences = function () {
+      if (window.LittleChefsPrefs && window.LittleChefsPrefs.resetPreferences) {
+        window.LittleChefsPrefs.resetPreferences();
+      }
+      window.LittleChefs.regenerateWithPreferences();
+    };
+
+    // Initialize preferences (loads from URL or localStorage)
+    if (window.LittleChefsPrefs) {
+      window.LittleChefsPrefs.initPreferencesUI();
+    }
+
+    // Initialize Supabase auth
+    if (window.LittleChefsAuth) {
+      const supabaseReady = window.LittleChefsAuth.initSupabase();
+      window.LittleChefsAuth.initAuthUI();
+      if (supabaseReady) {
+        // Check for existing session and load cloud preferences
+        window.LittleChefsAuth.checkSession().then(user => {
+          if (user && window.LittleChefsPrefs) {
+            window.LittleChefsPrefs.loadFromCloud();
+          }
+        });
+      }
+    }
+
     // Check URL params for shared state
     const params = new URLSearchParams(window.location.search);
     if (params.has("week")) {

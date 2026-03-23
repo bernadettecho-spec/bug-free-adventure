@@ -626,6 +626,281 @@ header h1::before { content: "\1F468\200D\1F373 "; }
 
 .recipe-tips strong { color: var(--clr-primary); }
 
+/* ─── USER LABEL ──────────────────────────────────── */
+.user-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  padding: 0.3rem 0.75rem;
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+}
+.user-label.hidden { display: none; }
+
+/* ─── AUTH MODAL ──────────────────────────────────── */
+.auth-modal-content { max-width: 420px; }
+
+.auth-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--clr-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.auth-subtitle {
+  font-size: 0.85rem;
+  color: var(--clr-text-light);
+  margin-bottom: 1.25rem;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--clr-border);
+}
+
+.auth-tab {
+  padding: 0.5rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--clr-text-light);
+  cursor: pointer;
+  margin-bottom: -2px;
+}
+
+.auth-tab.active {
+  color: var(--clr-primary);
+  border-bottom-color: var(--clr-primary);
+}
+
+.auth-form { display: none; }
+.auth-form.active { display: block; }
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--clr-text-light);
+  margin-bottom: 0.35rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 2px solid var(--clr-border);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--clr-secondary);
+}
+
+.auth-error {
+  color: var(--clr-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-height: 1.2em;
+  margin-bottom: 0.5rem;
+}
+
+.btn-full {
+  width: 100%;
+  text-align: center;
+}
+
+/* ─── PREFERENCES MODAL ──────────────────────────── */
+.prefs-modal-content { max-width: 500px; }
+
+.prefs-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--clr-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.prefs-subtitle {
+  font-size: 0.85rem;
+  color: var(--clr-text-light);
+  margin-bottom: 1.5rem;
+}
+
+.pref-section {
+  margin-bottom: 1.5rem;
+}
+
+.pref-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--clr-text);
+  margin-bottom: 0.5rem;
+}
+
+.pref-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pref-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--clr-border);
+  outline: none;
+}
+
+.pref-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--clr-primary);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(255,107,107,0.4);
+}
+
+.pref-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--clr-primary);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(255,107,107,0.4);
+}
+
+.pref-slider-value {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--clr-primary);
+  min-width: 60px;
+  text-align: right;
+}
+
+.pref-slider-hint {
+  font-size: 0.75rem;
+  color: var(--clr-text-light);
+  white-space: nowrap;
+}
+
+.pref-adventure-desc {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--clr-secondary);
+  margin-top: 0.35rem;
+}
+
+.pref-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pref-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border: 2px solid var(--clr-border);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+}
+
+.pref-checkbox:has(input:checked) {
+  border-color: var(--clr-primary);
+  background: rgba(255, 107, 107, 0.08);
+}
+
+.pref-checkbox input[type="checkbox"] {
+  accent-color: var(--clr-primary);
+}
+
+.pref-checkbox-label {
+  font-weight: 600;
+  color: var(--clr-text);
+}
+
+.pref-exclude-input {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.pref-exclude-input input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--clr-border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.pref-exclude-input input:focus {
+  outline: none;
+  border-color: var(--clr-secondary);
+}
+
+.excluded-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.excluded-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.7rem;
+  background: #ffe0e0;
+  color: #d63031;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.excluded-tag .remove-excluded {
+  background: none;
+  border: none;
+  color: #d63031;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.no-exclusions {
+  font-size: 0.8rem;
+  color: var(--clr-text-light);
+  font-style: italic;
+}
+
+.pref-actions {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--clr-border);
+}
+
 /* Toast */
 .toast {
   position: fixed;
