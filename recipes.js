@@ -29,7 +29,8 @@ const RECIPES = [
       "Bake for 10-12 minutes until cheese is bubbly and golden.",
       "Top with fresh basil leaves. Cut into small strips for easy gripping."
     ],
-    tips: "Let kids tear the basil and place cheese. For the 2yo, cut into finger-width strips."
+    tips: "Let kids tear the basil and place cheese. For the 2yo, cut into finger-width strips.",
+    video: ""
   },
   {
     id: "it-02",
@@ -54,7 +55,8 @@ const RECIPES = [
       "Add warm stock a ladle at a time, stirring between additions (about 18 mins total).",
       "Stir in mashed pumpkin, pumpkin chunks, and parmesan. Season lightly."
     ],
-    tips: "The 4yo can help stir the risotto. Freeze leftovers into small portions for quick future meals."
+    tips: "The 4yo can help stir the risotto. Freeze leftovers into small portions for quick future meals.",
+    video: ""
   },
   {
     id: "it-03",
@@ -81,7 +83,8 @@ const RECIPES = [
       "Add grated veg and tinned tomatoes. Simmer 15 mins until thick.",
       "Toss with drained pasta. Serve with grated parmesan."
     ],
-    tips: "Grate the veg very finely so they dissolve into the sauce. The 4yo can help grate the zucchini with a box grater under supervision."
+    tips: "Grate the veg very finely so they dissolve into the sauce. The 4yo can help grate the zucchini with a box grater under supervision.",
+    video: ""
   },
   {
     id: "it-04",
@@ -103,7 +106,8 @@ const RECIPES = [
       "Add gnocchi and a splash of pasta water. Toss until coated.",
       "Serve with generous parmesan."
     ],
-    tips: "The 2yo loves the pillow shape. Gnocchi freezes well - make double and freeze half."
+    tips: "The 2yo loves the pillow shape. Gnocchi freezes well - make double and freeze half.",
+    video: ""
   },
   {
     id: "it-05",
@@ -129,7 +133,8 @@ const RECIPES = [
       "Add pasta, cook until tender (about 8 mins). Stir in spinach to wilt.",
       "Serve in bowls with parmesan sprinkled on top."
     ],
-    tips: "The 4yo can help roll the tiny meatballs. Make them truly small - toddler-mouth sized."
+    tips: "The 4yo can help roll the tiny meatballs. Make them truly small - toddler-mouth sized.",
+    video: ""
   },
   {
     id: "it-06",
@@ -154,7 +159,8 @@ const RECIPES = [
       "Stir in cream cheese and spinach until wilted and creamy.",
       "Serve with parmesan on top."
     ],
-    tips: "Orzo's rice-like shape makes it easy for toddlers to scoop. This one-pot meal is a viral favourite for a reason."
+    tips: "Orzo's rice-like shape makes it easy for toddlers to scoop. This one-pot meal is a viral favourite for a reason.",
+    video: ""
   },
 
   // ─── JAPANESE ─────────────────────────────────────
@@ -181,7 +187,8 @@ const RECIPES = [
       "Mix soy sauce, mirin, and sugar. Pour over chicken, simmer until glossy (2-3 mins).",
       "Serve chicken over rice with edamame. Garnish with nori strips."
     ],
-    tips: "Cut chicken very small for the 2yo. The sweet teriyaki glaze is naturally appealing to little palates."
+    tips: "Cut chicken very small for the 2yo. The sweet teriyaki glaze is naturally appealing to little palates.",
+    video: ""
   },
   {
     id: "jp-02",
@@ -206,7 +213,8 @@ const RECIPES = [
       "Remove broth from heat. Dissolve miso paste into the broth (don't boil after adding miso).",
       "Place noodles in bowls, pour miso broth over. Top with spring onion."
     ],
-    tips: "Cut udon noodles shorter for the 2yo with kitchen scissors. The mild miso broth is perfect for young palates."
+    tips: "Cut udon noodles shorter for the 2yo with kitchen scissors. The mild miso broth is perfect for young palates.",
+    video: ""
   },
   {
     id: "jp-03",
@@ -231,7 +239,8 @@ const RECIPES = [
       "Wet hands with salted water. Take a handful of rice, press salmon into centre, shape into a triangle.",
       "Wrap bottom half of each onigiri with a strip of nori. Sprinkle with sesame seeds."
     ],
-    tips: "Make them small for little hands. The 4yo can help shape the rice balls - use cling wrap if they find it easier."
+    tips: "Make them small for little hands. The 4yo can help shape the rice balls - use cling wrap if they find it easier.",
+    video: ""
   },
   {
     id: "jp-04",
@@ -255,7 +264,8 @@ const RECIPES = [
       "Add 400ml water, bring to boil, then simmer 15 mins until vegetables are tender.",
       "Turn off heat. Add curry roux blocks, stir until dissolved. Simmer 3 more mins. Serve over rice."
     ],
-    tips: "Japanese curry roux is naturally mild and sweet - perfect for kids. Cut potato pieces small so they cook quickly."
+    tips: "Japanese curry roux is naturally mild and sweet - perfect for kids. Cut potato pieces small so they cook quickly.",
+    video: ""
   },
   {
     id: "jp-05",
@@ -279,7 +289,8 @@ const RECIPES = [
       "Add rice and peas, stir-fry for 3-4 minutes.",
       "Add soy sauce around edge of wok, toss to combine. Top with spring onion."
     ],
-    tips: "Use day-old rice for best results - the drier texture fries better. The 4yo can help crack the eggs."
+    tips: "Use day-old rice for best results - the drier texture fries better. The 4yo can help crack the eggs.",
+    video: ""
   },
   {
     id: "jp-06",
@@ -303,7 +314,8 @@ const RECIPES = [
       "Blend until silky smooth. Stir in milk/cream and miso paste.",
       "Serve warm in small bowls - kabocha's natural sweetness needs no added sugar."
     ],
-    tips: "Kabocha is naturally sweet and creamy, making it perfect for fussy eaters. Pair with rice or bread."
+    tips: "Kabocha is naturally sweet and creamy, making it perfect for fussy eaters. Pair with rice or bread.",
+    video: ""
   },
   {
     id: "jp-07",
@@ -328,7 +340,8 @@ const RECIPES = [
       "Shallow-fry in 1cm oil until golden and cooked through (3-4 mins per side). Drain on paper towel.",
       "Serve with rice and tonkatsu sauce on the side for dipping."
     ],
-    tips: "Cut pieces small for the 2yo. You can bake instead of fry at 200°C for 15 mins for a lighter option."
+    tips: "Cut pieces small for the 2yo. You can bake instead of fry at 200°C for 15 mins for a lighter option.",
+    video: ""
   },
 
   // ─── CHINESE ──────────────────────────────────────
@@ -354,7 +367,8 @@ const RECIPES = [
       "Beat eggs. While soup is simmering, slowly pour in egg in a thin stream while stirring gently.",
       "Drizzle with sesame oil, top with chopped spring onion."
     ],
-    tips: "The 2yo loves the silky texture. Pour the egg very slowly for beautiful ribbon strands."
+    tips: "The 2yo loves the silky texture. Pour the egg very slowly for beautiful ribbon strands.",
+    video: ""
   },
   {
     id: "cn-02",
@@ -379,7 +393,8 @@ const RECIPES = [
       "Stir-fry garlic in oil. Add noodles, soy sauces, and sugar. Toss on high heat 2 mins.",
       "Plate noodles with bok choy on the side."
     ],
-    tips: "Cut noodles shorter for the 2yo. The slightly sweet sauce is very gentle for young palates."
+    tips: "Cut noodles shorter for the 2yo. The slightly sweet sauce is very gentle for young palates.",
+    video: ""
   },
   {
     id: "cn-03",
@@ -402,7 +417,8 @@ const RECIPES = [
       "Cover tightly with foil. Steam over medium-low heat for 12-15 mins until just set (jiggly in the centre is OK).",
       "Drizzle with soy sauce, sesame oil, and spring onion."
     ],
-    tips: "The key is gentle heat - too high and you get bubbles. This is one of the most nutritious simple foods for toddlers."
+    tips: "The key is gentle heat - too high and you get bubbles. This is one of the most nutritious simple foods for toddlers.",
+    video: ""
   },
   {
     id: "cn-04",
@@ -428,7 +444,8 @@ const RECIPES = [
       "Remove chicken, shred with forks. Return to pot with corn. Cook 3 more mins.",
       "Serve with a drizzle of soy sauce, sesame oil, and spring onion."
     ],
-    tips: "For speedier congee, use leftover cooked rice and reduce cooking time to 15 mins. The 2yo loves the smooth, spoonable texture."
+    tips: "For speedier congee, use leftover cooked rice and reduce cooking time to 15 mins. The 2yo loves the smooth, spoonable texture.",
+    video: ""
   },
   {
     id: "cn-05",
@@ -453,7 +470,8 @@ const RECIPES = [
       "In the same pan, cook tomatoes with sugar until saucy (5 mins). Add a touch of ketchup if desired.",
       "Return eggs to pan, gently fold together. Serve over rice with spring onion."
     ],
-    tips: "This is many Chinese kids' first favourite meal. The sweet-tangy tomato with fluffy egg is universally loved."
+    tips: "This is many Chinese kids' first favourite meal. The sweet-tangy tomato with fluffy egg is universally loved.",
+    video: ""
   },
   {
     id: "cn-06",
@@ -480,7 +498,8 @@ const RECIPES = [
       "Cook noodles separately per packet, drain. Blanch bok choy in the broth.",
       "Place noodles in bowls, top with wontons and bok choy, ladle broth over. Garnish with spring onion."
     ],
-    tips: "The 4yo can help fold wontons - they don't need to look perfect! Make extras and freeze uncooked for a quick future meal."
+    tips: "The 4yo can help fold wontons - they don't need to look perfect! Make extras and freeze uncooked for a quick future meal.",
+    video: ""
   },
   {
     id: "cn-07",
@@ -505,7 +524,8 @@ const RECIPES = [
       "Add rice, toss over high heat. Add soy sauce around edge of wok.",
       "Drizzle with sesame oil, toss to combine. Top with spring onion."
     ],
-    tips: "Dice everything very small for the 2yo. Day-old rice makes the best fried rice - less sticky."
+    tips: "Dice everything very small for the 2yo. Day-old rice makes the best fried rice - less sticky.",
+    video: ""
   },
 
   // ─── COMFORT / PALATE EXPANSION ───────────────────
@@ -531,7 +551,8 @@ const RECIPES = [
       "Boil, then simmer 15 mins until potatoes are very soft.",
       "Blend until silky smooth. Stir in cream. Serve with a snip of chives."
     ],
-    tips: "Add a little cheese on top for extra appeal. Pair with bread soldiers for dipping."
+    tips: "Add a little cheese on top for extra appeal. Pair with bread soldiers for dipping.",
+    video: ""
   },
   {
     id: "cf-02",
@@ -555,7 +576,8 @@ const RECIPES = [
       "Remove from heat, stir in grated cheese until melted and smooth.",
       "Toss sauce with drained pasta. Serve immediately."
     ],
-    tips: "The cauliflower disappears completely into the cheese sauce. A masterclass in hidden vegetables."
+    tips: "The cauliflower disappears completely into the cheese sauce. A masterclass in hidden vegetables.",
+    video: ""
   },
   {
     id: "cf-03",
@@ -579,7 +601,8 @@ const RECIPES = [
       "Simmer 15 mins until sweet potatoes are very soft.",
       "Blend until smooth. Serve warm - natural sweetness means no added sugar needed."
     ],
-    tips: "A great bridge from familiar potato soup to more adventurous flavours. The coconut adds creaminess kids love."
+    tips: "A great bridge from familiar potato soup to more adventurous flavours. The coconut adds creaminess kids love.",
+    video: ""
   },
   {
     id: "cf-04",
@@ -603,7 +626,8 @@ const RECIPES = [
       "Heat oil in a pan. Drop tablespoons of mixture, flatten slightly. Fry 3-4 mins per side until golden.",
       "Drain on paper towels. Serve with sour cream or applesauce."
     ],
-    tips: "Make them small for little hands. The 4yo can help shape the pancakes. Great for using up potatoes."
+    tips: "Make them small for little hands. The 4yo can help shape the pancakes. Great for using up potatoes.",
+    video: ""
   },
   {
     id: "cf-05",
@@ -629,7 +653,8 @@ const RECIPES = [
       "Simmer filling 10 mins until carrot is tender. Spoon into ramekins or a small baking dish.",
       "Top with mashed potato. Grill for 3-5 mins until golden on top."
     ],
-    tips: "Individual ramekins make these fun for kids. The 4yo can help spoon the mash on top."
+    tips: "Individual ramekins make these fun for kids. The 4yo can help spoon the mash on top.",
+    video: ""
   },
   {
     id: "cf-06",
@@ -654,7 +679,8 @@ const RECIPES = [
       "Toss noodles with sauce. Top with cucumber matchsticks and sesame seeds.",
       "Serve cold or at room temperature."
     ],
-    tips: "Check for peanut allergies first. These noodles are great for lunchboxes - they taste even better after sitting. Cut noodles short for the 2yo."
+    tips: "Check for peanut allergies first. These noodles are great for lunchboxes - they taste even better after sitting. Cut noodles short for the 2yo.",
+    video: ""
   },
   {
     id: "cf-07",
@@ -679,7 +705,8 @@ const RECIPES = [
       "Steam dumplings in a lined bamboo steamer for 10-12 minutes until cooked through.",
       "Serve with a little soy sauce mixed with rice vinegar for dipping."
     ],
-    tips: "The 4yo will love helping to fill and fold! Make a big batch and freeze extras on a tray before transferring to a bag."
+    tips: "The 4yo will love helping to fill and fold! Make a big batch and freeze extras on a tray before transferring to a bag.",
+    video: ""
   },
   {
     id: "cf-08",
@@ -703,7 +730,8 @@ const RECIPES = [
       "Cook in a pan over medium heat, 3 mins per side until golden and melted.",
       "Cut into strips/soldiers. Serve with warm soup for dipping."
     ],
-    tips: "The dipping format makes this extra fun. Both ages love dunking their cheesy soldiers."
+    tips: "The dipping format makes this extra fun. Both ages love dunking their cheesy soldiers.",
+    video: ""
   },
   {
     id: "adv-01",
@@ -728,7 +756,8 @@ const RECIPES = [
       "Cook 4-5 mins per side until golden and cooked through.",
       "Top with okonomiyaki sauce, mayo zigzag, and bonito flakes (the kids will love watching them dance)."
     ],
-    tips: "The 4yo will be mesmerised by the bonito flakes moving in the heat. Cut into small wedges for serving."
+    tips: "The 4yo will be mesmerised by the bonito flakes moving in the heat. Cut into small wedges for serving.",
+    video: ""
   },
   {
     id: "adv-02",
@@ -754,7 +783,8 @@ const RECIPES = [
       "Heat oil in a non-stick pan. Place gyoza flat-side down, cook 2 mins until golden on bottom.",
       "Add 3 tbsp water, cover, steam 5-6 mins. Uncover, cook until water evaporates and bottoms re-crisp."
     ],
-    tips: "The steam-then-crisp method gives the signature crispy bottom. Dipping sauce: mix soy sauce + rice vinegar."
+    tips: "The steam-then-crisp method gives the signature crispy bottom. Dipping sauce: mix soy sauce + rice vinegar.",
+    video: ""
   },
   {
     id: "adv-03",
@@ -779,7 +809,8 @@ const RECIPES = [
       "Layer omelette, tuna, and cucumber on rice. Top with more rice.",
       "Fold nori corners to centre like a parcel. Flip, rest 2 mins, then cut in half."
     ],
-    tips: "These are easier than sushi rolls and great for little hands. Let the 4yo choose their own fillings."
+    tips: "These are easier than sushi rolls and great for little hands. Let the 4yo choose their own fillings.",
+    video: ""
   },
   {
     id: "adv-04",
@@ -804,7 +835,8 @@ const RECIPES = [
       "Roll up like a log, then coil into a disc. Roll flat again.",
       "Pan-fry in oil over medium heat, 3-4 mins per side until golden and flaky. Cut into wedges."
     ],
-    tips: "The resting time allows the dough to become pliable. These are addictive - make extra! The layers come from the rolling technique."
+    tips: "The resting time allows the dough to become pliable. These are addictive - make extra! The layers come from the rolling technique.",
+    video: ""
   },
   {
     id: "adv-05",
@@ -829,7 +861,8 @@ const RECIPES = [
       "Add noodles and yakisoba sauce. Toss over high heat for 2-3 mins.",
       "Serve with bonito flakes and a zigzag of mayo on top."
     ],
-    tips: "If you can't find yakisoba sauce, mix: 1 tbsp Worcestershire, 1 tbsp ketchup, 1 tsp soy sauce. Cut noodles shorter for the 2yo."
+    tips: "If you can't find yakisoba sauce, mix: 1 tbsp Worcestershire, 1 tbsp ketchup, 1 tsp soy sauce. Cut noodles shorter for the 2yo.",
+    video: ""
   },
   {
     id: "adv-06",
@@ -855,7 +888,8 @@ const RECIPES = [
       "Add 100ml water. Gently slide in tofu cubes. Simmer 5 mins.",
       "Mix cornstarch with 1 tbsp water, stir into pan to thicken. Drizzle sesame oil, top with spring onion. Serve over rice."
     ],
-    tips: "No chilli at all for the kids - the savoury soy-pork flavour is plenty. Introduce a tiny pinch of white pepper first if expanding spice tolerance."
+    tips: "No chilli at all for the kids - the savoury soy-pork flavour is plenty. Introduce a tiny pinch of white pepper first if expanding spice tolerance.",
+    video: ""
   },
   {
     id: "adv-07",
@@ -881,7 +915,8 @@ const RECIPES = [
       "Shape into small oval patties. Coat: flour → egg → panko.",
       "Shallow-fry until golden all over (3-4 mins total). Drain on paper towels. Serve with tonkatsu sauce."
     ],
-    tips: "Make them small and oval - easy to grip. These freeze well before frying. Bake at 200°C as a lighter alternative."
+    tips: "Make them small and oval - easy to grip. These freeze well before frying. Bake at 200°C as a lighter alternative.",
+    video: ""
   },
   {
     id: "adv-08",
@@ -906,7 +941,8 @@ const RECIPES = [
       "Add udon, soy sauce, and mirin. Toss over high heat for 2 mins.",
       "Garnish with spring onion. Serve immediately."
     ],
-    tips: "Udon's thick, chewy texture is great for toddlers learning to use chopsticks (or forks). Cut noodles shorter for the 2yo."
+    tips: "Udon's thick, chewy texture is great for toddlers learning to use chopsticks (or forks). Cut noodles shorter for the 2yo.",
+    video: ""
   }
 ];
 

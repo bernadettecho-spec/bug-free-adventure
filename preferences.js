@@ -176,6 +176,109 @@
     renderExcludedIngredients();
   }
 
+  // ─── CUISINE AUTOCOMPLETE ──────────────────────────
+
+  const CUISINE_OPTIONS = [
+    { key: "italian", label: "Italian" },
+    { key: "japanese", label: "Japanese" },
+    { key: "chinese", label: "Chinese" },
+    { key: "comfort", label: "Comfort Food" },
+    { key: "adventure", label: "Adventure" }
+  ];
+
+  function initCuisineAutocomplete() {
+    const searchInput = document.getElementById("cuisine-search");
+    const suggestionsEl = document.getElementById("cuisine-suggestions");
+    if (!searchInput || !suggestionsEl) return;
+
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLowerCase();
+      if (!query) {
+        suggestionsEl.classList.add("hidden");
+        return;
+      }
+
+      const matches = CUISINE_OPTIONS.filter(c =>
+        c.label.toLowerCase().includes(query)
+      );
+
+      if (matches.length === 0) {
+        suggestionsEl.classList.add("hidden");
+        return;
+      }
+
+      suggestionsEl.innerHTML = matches.map(c => {
+        const cb = document.getElementById(`pref-cuisine-${c.key}`);
+        const isChecked = cb ? cb.checked : false;
+        return `<div class="cuisine-suggestion" data-key="${c.key}">
+          <span>${c.label}</span>
+          <span class="cuisine-suggestion-status">${isChecked ? "&#10003; included" : "not included"}</span>
+        </div>`;
+      }).join("");
+
+      suggestionsEl.classList.remove("hidden");
+
+      // Attach click handlers to suggestions
+      suggestionsEl.querySelectorAll(".cuisine-suggestion").forEach(el => {
+        el.addEventListener("click", () => {
+          const key = el.dataset.key;
+          const cb = document.getElementById(`pref-cuisine-${key}`);
+          if (cb) {
+            cb.checked = !cb.checked;
+            // Scroll the checkbox into view with highlight
+            const label = cb.closest(".pref-checkbox");
+            if (label) {
+              label.classList.add("cuisine-highlight");
+              setTimeout(() => label.classList.remove("cuisine-highlight"), 800);
+            }
+          }
+          searchInput.value = "";
+          suggestionsEl.classList.add("hidden");
+        });
+      });
+    });
+
+    // Close suggestions when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".cuisine-autocomplete-wrapper")) {
+        suggestionsEl.classList.add("hidden");
+      }
+    });
+
+    // Show all options on focus when input is empty
+    searchInput.addEventListener("focus", () => {
+      if (!searchInput.value.trim()) {
+        // Show all options
+        suggestionsEl.innerHTML = CUISINE_OPTIONS.map(c => {
+          const cb = document.getElementById(`pref-cuisine-${c.key}`);
+          const isChecked = cb ? cb.checked : false;
+          return `<div class="cuisine-suggestion" data-key="${c.key}">
+            <span>${c.label}</span>
+            <span class="cuisine-suggestion-status">${isChecked ? "&#10003; included" : "not included"}</span>
+          </div>`;
+        }).join("");
+        suggestionsEl.classList.remove("hidden");
+
+        suggestionsEl.querySelectorAll(".cuisine-suggestion").forEach(el => {
+          el.addEventListener("click", () => {
+            const key = el.dataset.key;
+            const cb = document.getElementById(`pref-cuisine-${key}`);
+            if (cb) {
+              cb.checked = !cb.checked;
+              const label = cb.closest(".pref-checkbox");
+              if (label) {
+                label.classList.add("cuisine-highlight");
+                setTimeout(() => label.classList.remove("cuisine-highlight"), 800);
+              }
+            }
+            searchInput.value = "";
+            suggestionsEl.classList.add("hidden");
+          });
+        });
+      }
+    });
+  }
+
   // ─── SHAREABLE LINK ────────────────────────────────
 
   function generateShareableLink() {
@@ -339,6 +442,9 @@
         }
       });
     }
+
+    // Initialize cuisine autocomplete
+    initCuisineAutocomplete();
 
     updatePreferencesUI();
   }

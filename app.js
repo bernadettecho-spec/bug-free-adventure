@@ -6,10 +6,9 @@
   "use strict";
 
   const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-  const TOTAL_WEEKS = 8;
-
   let currentWeek = 0;
   let weekPlans = [];
+  let usedIdsGlobal = new Set();
 
   // ─── PREFERENCES HELPERS ───────────────────────────
   // Get the current user preferences (from preferences.js module)
@@ -52,11 +51,18 @@
   // Generates non-repeating weekly plans with palate expansion
 
   function generateAllWeeks() {
-    const usedIds = new Set();
+    usedIdsGlobal = new Set();
     weekPlans = [];
+    // Pre-generate the first 4 weeks; additional weeks are generated on demand
+    for (let w = 0; w < 4; w++) {
+      const plan = generateWeekPlan(usedIdsGlobal, w);
+      weekPlans.push(plan);
+    }
+  }
 
-    for (let w = 0; w < TOTAL_WEEKS; w++) {
-      const plan = generateWeekPlan(usedIds, w);
+  function ensureWeekExists(weekIndex) {
+    while (weekPlans.length <= weekIndex) {
+      const plan = generateWeekPlan(usedIdsGlobal, weekPlans.length);
       weekPlans.push(plan);
     }
   }
@@ -248,6 +254,7 @@
   }
 
   function renderMealPlan() {
+    ensureWeekExists(currentWeek);
     const grid = document.getElementById("meal-plan-grid");
     const plan = weekPlans[currentWeek];
 
@@ -375,7 +382,30 @@
       <div class="recipe-tips">
         <strong>Toddler Tips:</strong> ${recipe.tips}
       </div>
+
+      ${recipe.video ? `
+      <div class="recipe-video-section">
+        <button class="btn btn-small btn-video-toggle" id="btn-toggle-video">Watch Video</button>
+        <div class="recipe-video-container hidden" id="recipe-video-container">
+          <iframe src="${recipe.video}" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+        </div>
+      </div>
+      ` : `
+      <div class="recipe-video-section">
+        <span class="recipe-video-placeholder">No video available yet</span>
+      </div>
+      `}
     `;
+
+    // Attach video toggle handler
+    const videoToggleBtn = detail.querySelector("#btn-toggle-video");
+    if (videoToggleBtn) {
+      videoToggleBtn.addEventListener("click", () => {
+        const container = detail.querySelector("#recipe-video-container");
+        container.classList.toggle("hidden");
+        videoToggleBtn.textContent = container.classList.contains("hidden") ? "Watch Video" : "Hide Video";
+      });
+    }
 
     modal.classList.remove("hidden");
   }
@@ -694,12 +724,11 @@
     });
 
     document.getElementById("btn-next-week").addEventListener("click", () => {
-      if (currentWeek < TOTAL_WEEKS - 1) {
-        currentWeek++;
-        renderWeekLabel();
-        renderMealPlan();
-        renderGroceryList();
-      }
+      currentWeek++;
+      ensureWeekExists(currentWeek);
+      renderWeekLabel();
+      renderMealPlan();
+      renderGroceryList();
     });
 
     document.getElementById("btn-regenerate").addEventListener("click", () => {

@@ -144,7 +144,11 @@
       <!-- Cuisines -->
       <div class="pref-section">
         <label class="pref-label">Cuisines to include</label>
-        <div class="pref-checkboxes">
+        <div class="cuisine-autocomplete-wrapper">
+          <input type="text" id="cuisine-search" class="cuisine-search-input" placeholder="Type to search cuisines..." autocomplete="off">
+          <div id="cuisine-suggestions" class="cuisine-suggestions hidden"></div>
+        </div>
+        <div class="pref-checkboxes" id="cuisine-checkboxes">
           <label class="pref-checkbox">
             <input type="checkbox" id="pref-cuisine-italian" checked>
             <span class="pref-checkbox-label">Italian</span>
