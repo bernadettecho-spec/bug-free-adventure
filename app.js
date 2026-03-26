@@ -211,28 +211,53 @@
 
   // ─── GROCERY LIST GENERATOR ───────────────────────
 
+  function getCustomStores() {
+    const prefs = getPrefs();
+    return prefs.customStores && prefs.customStores.length > 0
+      ? prefs.customStores
+      : [
+          { id: "little-farms", name: "Little Farms", tagline: "Premium groceries, dairy, meat & produce", colorIndex: 0, categories: ["Proteins", "Dairy", "Pantry", "Grains & Noodles", "Frozen", "Other"] },
+          { id: "talula-farms", name: "Talula Farms", tagline: "Organic produce & specialty items", colorIndex: 1, categories: ["Produce"] },
+          { id: "zairyo", name: "Zairyo", tagline: "Japanese & Asian specialty ingredients", colorIndex: 2, categories: ["Asian & World Specialty"] }
+        ];
+  }
+
+  // Build a map from ingredient category -> store id based on user's custom stores
+  function buildCategoryToStoreMap(stores) {
+    const map = {};
+    stores.forEach(store => {
+      (store.categories || []).forEach(cat => {
+        map[cat] = store.id;
+      });
+    });
+    return map;
+  }
+
   function generateGroceryList(weekPlan) {
-    const storeGroups = {
-      "little-farms": {},
-      "talula-farms": {},
-      "zairyo": {}
-    };
+    const stores = getCustomStores();
+    const categoryToStore = buildCategoryToStoreMap(stores);
+    const fallbackStoreId = stores.length > 0 ? stores[0].id : "default";
+
+    // Initialize store groups
+    const storeGroups = {};
+    stores.forEach(s => { storeGroups[s.id] = {}; });
 
     weekPlan.forEach(day => {
       [day.lunch, day.dinner].forEach(recipe => {
         if (!recipe) return;
         recipe.ingredients.forEach(ing => {
-          const store = getStoreForIngredient(ing);
           const category = getIngredientCategory(ing.item);
+          // Route ingredient to user's store based on category mapping
+          const storeId = categoryToStore[category] || fallbackStoreId;
 
-          if (!storeGroups[store]) storeGroups[store] = {};
-          if (!storeGroups[store][category]) storeGroups[store][category] = {};
+          if (!storeGroups[storeId]) storeGroups[storeId] = {};
+          if (!storeGroups[storeId][category]) storeGroups[storeId][category] = {};
 
           // Aggregate quantities
-          if (storeGroups[store][category][ing.item]) {
-            storeGroups[store][category][ing.item].recipes.push(recipe.name);
+          if (storeGroups[storeId][category][ing.item]) {
+            storeGroups[storeId][category][ing.item].recipes.push(recipe.name);
           } else {
-            storeGroups[store][category][ing.item] = {
+            storeGroups[storeId][category][ing.item] = {
               qty: ing.qty,
               recipes: [recipe.name]
             };
@@ -329,22 +354,37 @@
     });
   }
 
+  function getStoreColor(store) {
+    const STORE_COLORS = window.LittleChefsPrefs && window.LittleChefsPrefs.getStoreColors
+      ? window.LittleChefsPrefs.getStoreColors()
+      : [
+          { bg: ["#2d6a4f", "#52b788"], rgb: [45, 106, 79] },
+          { bg: ["#7f4f24", "#c68b59"], rgb: [127, 79, 36] },
+          { bg: ["#9b2226", "#e63946"], rgb: [155, 34, 38] }
+        ];
+    return STORE_COLORS[store.colorIndex % STORE_COLORS.length];
+  }
+
   function renderGroceryList() {
     const container = document.getElementById("grocery-stores");
     const plan = weekPlans[currentWeek];
     const groceryData = generateGroceryList(plan);
+    const stores = getCustomStores();
 
-    container.innerHTML = Object.entries(STORES).map(([storeKey, storeMeta]) => {
-      const categories = groceryData[storeKey] || {};
+    container.innerHTML = stores.map(store => {
+      const categories = groceryData[store.id] || {};
       const categoryEntries = Object.entries(categories).filter(([, items]) => Object.keys(items).length > 0);
 
       if (categoryEntries.length === 0) return "";
 
+      const color = getStoreColor(store);
+      const gradient = `linear-gradient(135deg, ${color.bg[0]}, ${color.bg[1]})`;
+
       return `
         <div class="store-card">
-          <div class="store-header ${storeMeta.cssClass}">
-            <span>${storeMeta.name}</span>
-            <span class="store-tagline">${storeMeta.tagline}</span>
+          <div class="store-header" style="background: ${gradient}">
+            <span>${store.name}</span>
+            <span class="store-tagline">${store.tagline || ""}</span>
           </div>
           ${categoryEntries.map(([category, items]) => `
             <div class="grocery-category">
@@ -549,9 +589,10 @@
     doc.text(`Week ${currentWeek + 1} - Grocery Lists`, 105, 28, { align: "center" });
 
     let isFirst = true;
+    const stores = getCustomStores();
 
-    Object.entries(STORES).forEach(([storeKey, storeMeta]) => {
-      const categories = groceryData[storeKey] || {};
+    stores.forEach(store => {
+      const categories = groceryData[store.id] || {};
       const categoryEntries = Object.entries(categories).filter(([, items]) => Object.keys(items).length > 0);
       if (categoryEntries.length === 0) return;
 
@@ -559,20 +600,16 @@
       isFirst = false;
 
       // Store header
-      const colors = {
-        "little-farms": [45, 106, 79],
-        "talula-farms": [127, 79, 36],
-        "zairyo": [155, 34, 38]
-      };
-      const c = colors[storeKey] || [61, 64, 91];
+      const color = getStoreColor(store);
+      const c = color.rgb;
 
       doc.setFillColor(c[0], c[1], c[2]);
       doc.rect(0, 38, 210, 12, "F");
       doc.setFontSize(14);
       doc.setTextColor(255, 255, 255);
-      doc.text(`${storeMeta.name}`, 14, 46);
+      doc.text(store.name, 14, 46);
       doc.setFontSize(8);
-      doc.text(storeMeta.tagline, 196, 46, { align: "right" });
+      doc.text(store.tagline || "", 196, 46, { align: "right" });
 
       let y = 58;
 

@@ -41,6 +41,53 @@
     return obj;
   }
 
+  // ─── DEFAULT STORES ────────────────────────────────
+  // Each store has a name, color, and a list of ingredient categories assigned to it.
+  // The ingredient categories come from INGREDIENT_CATEGORIES in recipes.js:
+  //   Proteins, Dairy, Produce, Pantry, Grains & Noodles, Frozen, Asian & World Specialty
+
+  const ALL_CATEGORIES = [
+    "Proteins", "Dairy", "Produce", "Pantry",
+    "Grains & Noodles", "Frozen", "Asian & World Specialty", "Other"
+  ];
+
+  const STORE_COLORS = [
+    { bg: ["#2d6a4f", "#52b788"], rgb: [45, 106, 79] },
+    { bg: ["#7f4f24", "#c68b59"], rgb: [127, 79, 36] },
+    { bg: ["#9b2226", "#e63946"], rgb: [155, 34, 38] },
+    { bg: ["#1d3557", "#457b9d"], rgb: [29, 53, 87] },
+    { bg: ["#6a4c93", "#b185db"], rgb: [106, 76, 147] },
+    { bg: ["#e07a5f", "#f2cc8f"], rgb: [224, 122, 95] },
+    { bg: ["#264653", "#2a9d8f"], rgb: [38, 70, 83] },
+    { bg: ["#bc6c25", "#dda15e"], rgb: [188, 108, 37] }
+  ];
+
+  function buildDefaultStores() {
+    return [
+      {
+        id: "little-farms",
+        name: "Little Farms",
+        tagline: "Premium groceries, dairy, meat & produce",
+        colorIndex: 0,
+        categories: ["Proteins", "Dairy", "Pantry", "Grains & Noodles", "Frozen", "Other"]
+      },
+      {
+        id: "talula-farms",
+        name: "Talula Farms",
+        tagline: "Organic produce & specialty items",
+        colorIndex: 1,
+        categories: ["Produce"]
+      },
+      {
+        id: "zairyo",
+        name: "Zairyo",
+        tagline: "Japanese & Asian specialty ingredients",
+        colorIndex: 2,
+        categories: ["Asian & World Specialty"]
+      }
+    ];
+  }
+
   // ─── DEFAULT PREFERENCES ───────────────────────────
 
   const DEFAULTS = {
@@ -49,7 +96,8 @@
     adventureLevel: 1,      // 1 = cautious, 2 = moderate, 3 = adventurous
     excludedIngredients: [], // e.g. ["peanut butter", "tofu"]
     childAges: "2-4",       // display label
-    mealsPerDay: 2           // lunch + dinner
+    mealsPerDay: 2,          // lunch + dinner
+    customStores: buildDefaultStores()
   };
 
   let preferences = JSON.parse(JSON.stringify(DEFAULTS));
@@ -67,6 +115,10 @@
           if (preferences.cuisines[key] === undefined) {
             preferences.cuisines[key] = DEFAULTS.cuisines[key];
           }
+        }
+        // Ensure customStores exists
+        if (!preferences.customStores || !Array.isArray(preferences.customStores)) {
+          preferences.customStores = buildDefaultStores();
         }
       }
     } catch (e) {
@@ -184,6 +236,9 @@
 
     // Excluded ingredients
     renderExcludedIngredients();
+
+    // Custom stores
+    renderCustomStores();
   }
 
   function renderExcludedIngredients() {
@@ -287,6 +342,151 @@
         renderSuggestions(suggestionsEl, CUISINE_OPTIONS, searchInput);
       }
     });
+  }
+
+  // ─── CUSTOM STORES UI ──────────────────────────────
+
+  function generateStoreId(name) {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  }
+
+  function getAssignedCategories() {
+    const assigned = new Set();
+    (preferences.customStores || []).forEach(s => {
+      (s.categories || []).forEach(c => assigned.add(c));
+    });
+    return assigned;
+  }
+
+  function getUnassignedCategories() {
+    const assigned = getAssignedCategories();
+    return ALL_CATEGORIES.filter(c => !assigned.has(c));
+  }
+
+  function renderCustomStores() {
+    const container = document.getElementById("custom-stores-list");
+    if (!container) return;
+
+    const stores = preferences.customStores || [];
+
+    if (stores.length === 0) {
+      container.innerHTML = '<p class="pref-hint">No stores added yet. Add your first store below.</p>';
+      return;
+    }
+
+    container.innerHTML = stores.map((store, idx) => {
+      const color = STORE_COLORS[store.colorIndex % STORE_COLORS.length];
+      const gradient = `linear-gradient(135deg, ${color.bg[0]}, ${color.bg[1]})`;
+      const assignedCats = store.categories || [];
+      const unassigned = ALL_CATEGORIES.filter(c => !assignedCats.includes(c) && !stores.some((s, i) => i !== idx && s.categories.includes(c)));
+
+      return `
+        <div class="custom-store-card" data-store-idx="${idx}">
+          <div class="custom-store-header" style="background: ${gradient}">
+            <div class="custom-store-info">
+              <span class="custom-store-name">${store.name}</span>
+              <span class="custom-store-tagline">${store.tagline || ""}</span>
+            </div>
+            <button class="custom-store-remove" data-idx="${idx}" title="Remove store">&times;</button>
+          </div>
+          <div class="custom-store-body">
+            <div class="custom-store-categories">
+              ${assignedCats.map(cat => `
+                <span class="store-category-tag">
+                  ${cat}
+                  <button class="remove-category" data-idx="${idx}" data-cat="${cat}" title="Remove category">&times;</button>
+                </span>
+              `).join("")}
+            </div>
+            ${unassigned.length > 0 ? `
+              <div class="custom-store-add-cat">
+                <select class="select-add-category" data-idx="${idx}">
+                  <option value="">+ Assign category...</option>
+                  ${unassigned.map(c => `<option value="${c}">${c}</option>`).join("")}
+                </select>
+              </div>
+            ` : ""}
+            <div class="custom-store-tagline-edit">
+              <input type="text" class="input-store-tagline" data-idx="${idx}" placeholder="Short description (optional)" value="${store.tagline || ""}">
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    // Show unassigned categories warning
+    const allUnassigned = getUnassignedCategories();
+    if (allUnassigned.length > 0) {
+      container.insertAdjacentHTML("beforeend", `
+        <div class="unassigned-warning">
+          <strong>Unassigned categories:</strong> ${allUnassigned.join(", ")}
+          <br><small>These items will appear under the first store.</small>
+        </div>
+      `);
+    }
+
+    // Attach event handlers
+    container.querySelectorAll(".custom-store-remove").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.dataset.idx, 10);
+        preferences.customStores.splice(idx, 1);
+        renderCustomStores();
+      });
+    });
+
+    container.querySelectorAll(".remove-category").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.dataset.idx, 10);
+        const cat = btn.dataset.cat;
+        preferences.customStores[idx].categories = preferences.customStores[idx].categories.filter(c => c !== cat);
+        renderCustomStores();
+      });
+    });
+
+    container.querySelectorAll(".select-add-category").forEach(sel => {
+      sel.addEventListener("change", () => {
+        if (!sel.value) return;
+        const idx = parseInt(sel.dataset.idx, 10);
+        preferences.customStores[idx].categories.push(sel.value);
+        renderCustomStores();
+      });
+    });
+
+    container.querySelectorAll(".input-store-tagline").forEach(input => {
+      input.addEventListener("input", () => {
+        const idx = parseInt(input.dataset.idx, 10);
+        preferences.customStores[idx].tagline = input.value;
+      });
+    });
+  }
+
+  function addCustomStore(name) {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+
+    const stores = preferences.customStores || [];
+    // Prevent duplicate names
+    if (stores.some(s => s.name.toLowerCase() === trimmed.toLowerCase())) return;
+
+    const nextColorIndex = stores.length > 0
+      ? (Math.max(...stores.map(s => s.colorIndex)) + 1) % STORE_COLORS.length
+      : 0;
+
+    stores.push({
+      id: generateStoreId(trimmed),
+      name: trimmed,
+      tagline: "",
+      colorIndex: nextColorIndex,
+      categories: []
+    });
+
+    preferences.customStores = stores;
+    renderCustomStores();
+  }
+
+  function resetStoresToDefaults() {
+    preferences.customStores = buildDefaultStores();
+    renderCustomStores();
   }
 
   // ─── SHAREABLE LINK ────────────────────────────────
@@ -431,6 +631,29 @@
       });
     }
 
+    // Add store button
+    const addStoreBtn = document.getElementById("btn-add-store");
+    const storeInput = document.getElementById("input-new-store");
+    if (addStoreBtn && storeInput) {
+      addStoreBtn.addEventListener("click", () => {
+        addCustomStore(storeInput.value);
+        storeInput.value = "";
+      });
+      storeInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          addCustomStore(storeInput.value);
+          storeInput.value = "";
+        }
+      });
+    }
+
+    // Reset stores button
+    const resetStoresBtn = document.getElementById("btn-reset-stores");
+    if (resetStoresBtn) {
+      resetStoresBtn.addEventListener("click", resetStoresToDefaults);
+    }
+
     // Save button
     const saveBtn = document.getElementById("btn-save-preferences");
     if (saveBtn) saveBtn.addEventListener("click", savePreferences);
@@ -468,6 +691,8 @@
     initPreferencesUI,
     getPreferences: () => preferences,
     getCuisineOptions: () => CUISINE_OPTIONS,
+    getStoreColors: () => STORE_COLORS,
+    getAllCategories: () => ALL_CATEGORIES,
     resetPreferences: () => {
       preferences = JSON.parse(JSON.stringify(DEFAULTS));
       saveToLocal();
