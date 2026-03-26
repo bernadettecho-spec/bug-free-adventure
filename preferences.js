@@ -63,32 +63,7 @@
   ];
 
   function buildDefaultStores() {
-    return [
-      {
-        id: "little-farms",
-        name: "Little Farms",
-        tagline: "Premium groceries, dairy, meat & produce",
-        url: "https://www.littlefarms.com",
-        colorIndex: 0,
-        categories: ["Proteins", "Dairy", "Pantry", "Grains & Noodles", "Frozen", "Other"]
-      },
-      {
-        id: "talula-farms",
-        name: "Talula Farms",
-        tagline: "Organic produce & specialty items",
-        url: "https://www.talulafarms.com",
-        colorIndex: 1,
-        categories: ["Produce"]
-      },
-      {
-        id: "zairyo",
-        name: "Zairyo",
-        tagline: "Japanese & Asian specialty ingredients",
-        url: "https://zairyo.com",
-        colorIndex: 2,
-        categories: ["Asian & World Specialty"]
-      }
-    ];
+    return [];
   }
 
   // ─── DEFAULT PREFERENCES ───────────────────────────

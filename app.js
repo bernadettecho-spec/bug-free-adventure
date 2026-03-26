@@ -213,14 +213,19 @@
 
   function getCustomStores() {
     const prefs = getPrefs();
-    return prefs.customStores && prefs.customStores.length > 0
-      ? prefs.customStores
-      : [
-          { id: "little-farms", name: "Little Farms", tagline: "Premium groceries, dairy, meat & produce", colorIndex: 0, categories: ["Proteins", "Dairy", "Pantry", "Grains & Noodles", "Frozen", "Other"] },
-          { id: "talula-farms", name: "Talula Farms", tagline: "Organic produce & specialty items", colorIndex: 1, categories: ["Produce"] },
-          { id: "zairyo", name: "Zairyo", tagline: "Japanese & Asian specialty ingredients", colorIndex: 2, categories: ["Asian & World Specialty"] }
-        ];
+    if (prefs.customStores && prefs.customStores.length > 0) {
+      return prefs.customStores;
+    }
+    // Fallback: single catch-all store when user hasn't added any
+    return [
+      { id: "all", name: "Grocery List", tagline: "All ingredients", url: "", colorIndex: 0, categories: ALL_CATEGORIES.slice() }
+    ];
   }
+
+  // Get ALL_CATEGORIES from preferences module or use defaults
+  const ALL_CATEGORIES = (window.LittleChefsPrefs && window.LittleChefsPrefs.getAllCategories)
+    ? window.LittleChefsPrefs.getAllCategories()
+    : ["Proteins", "Dairy", "Produce", "Pantry", "Grains & Noodles", "Frozen", "Asian & World Specialty", "Other"];
 
   // Build a map from ingredient category -> store id based on user's custom stores
   function buildCategoryToStoreMap(stores) {
