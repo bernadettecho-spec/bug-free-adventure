@@ -1234,6 +1234,55 @@ header h1::before { content: "\1F468\200D\1F373 "; }
   margin: 0 0 0.5rem;
 }
 
+.store-autocomplete-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.store-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--clr-card);
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-hover);
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 2px;
+}
+
+.store-suggestions.hidden { display: none; }
+
+.store-suggestion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.store-suggestion:hover {
+  background: var(--clr-bg);
+}
+
+.store-suggestion-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clr-text);
+}
+
+.store-suggestion-region {
+  font-size: 0.7rem;
+  color: var(--clr-text-light);
+  background: var(--clr-bg);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
 .unassigned-warning {
   background: #fff3cd;
   border: 1px solid #ffc107;

@@ -322,6 +322,72 @@
     });
   }
 
+  // ─── KNOWN STORES DIRECTORY ────────────────────────
+  // Used for URL auto-populate and suggestions when typing store names
+
+  const KNOWN_STORES = [
+    // Singapore
+    { name: "Little Farms", url: "https://www.littlefarms.com", region: "SG" },
+    { name: "Talula Farms", url: "https://www.talulafarms.com", region: "SG" },
+    { name: "Zairyo", url: "https://zairyo.com", region: "SG" },
+    { name: "FairPrice", url: "https://www.fairprice.com.sg", region: "SG" },
+    { name: "FairPrice Finest", url: "https://www.fairprice.com.sg", region: "SG" },
+    { name: "FairPrice Xtra", url: "https://www.fairprice.com.sg", region: "SG" },
+    { name: "Cold Storage", url: "https://coldstorage.com.sg", region: "SG" },
+    { name: "Giant", url: "https://giant.sg", region: "SG" },
+    { name: "Sheng Siong", url: "https://www.shengsiong.com.sg", region: "SG" },
+    { name: "RedMart", url: "https://www.lazada.sg/shop/redmart", region: "SG" },
+    { name: "Don Don Donki", url: "https://www.dondondonki.com", region: "SG" },
+    { name: "Meidi-Ya", url: "https://www.meidi-ya.com.sg", region: "SG" },
+    { name: "Isetan Scotts", url: "https://www.isetan.com.sg", region: "SG" },
+    { name: "Isetan", url: "https://www.isetan.com.sg", region: "SG" },
+    { name: "Jason's Deli", url: "https://jasons.com.sg", region: "SG" },
+    { name: "Ryan's Grocery", url: "https://www.rfryan.com", region: "SG" },
+    { name: "Huber's Butchery", url: "https://www.hubers.com.sg", region: "SG" },
+    { name: "The Butcher", url: "https://www.thebutcher.com.sg", region: "SG" },
+    { name: "Sasha's Fine Foods", url: "https://www.sashasfinefoods.com", region: "SG" },
+    { name: "MarketFresh", url: "https://marketfresh.com.sg", region: "SG" },
+    { name: "The Fish Wife", url: "https://www.thefishwife.com.sg", region: "SG" },
+    { name: "Greengrocer", url: "https://greengrocer.com.sg", region: "SG" },
+    { name: "Scoop Wholefoods", url: "https://www.scoopwholefoods.com", region: "SG" },
+    { name: "Amazon Fresh", url: "https://www.amazon.sg/fresh", region: "SG" },
+    // International
+    { name: "Whole Foods", url: "https://www.wholefoodsmarket.com", region: "US" },
+    { name: "Whole Foods Market", url: "https://www.wholefoodsmarket.com", region: "US" },
+    { name: "Trader Joe's", url: "https://www.traderjoes.com", region: "US" },
+    { name: "Costco", url: "https://www.costco.com", region: "US" },
+    { name: "Kroger", url: "https://www.kroger.com", region: "US" },
+    { name: "Walmart", url: "https://www.walmart.com/grocery", region: "US" },
+    { name: "Target", url: "https://www.target.com/c/grocery", region: "US" },
+    { name: "Safeway", url: "https://www.safeway.com", region: "US" },
+    { name: "Publix", url: "https://www.publix.com", region: "US" },
+    { name: "Aldi", url: "https://www.aldi.com", region: "US/EU" },
+    { name: "Lidl", url: "https://www.lidl.com", region: "EU" },
+    { name: "Tesco", url: "https://www.tesco.com", region: "UK" },
+    { name: "Sainsbury's", url: "https://www.sainsburys.co.uk", region: "UK" },
+    { name: "Waitrose", url: "https://www.waitrose.com", region: "UK" },
+    { name: "Marks & Spencer", url: "https://www.marksandspencer.com/c/food-to-order", region: "UK" },
+    { name: "M&S Food", url: "https://www.marksandspencer.com/c/food-to-order", region: "UK" },
+    { name: "Ocado", url: "https://www.ocado.com", region: "UK" },
+    { name: "Coles", url: "https://www.coles.com.au", region: "AU" },
+    { name: "Woolworths", url: "https://www.woolworths.com.au", region: "AU" },
+    { name: "Carrefour", url: "https://www.carrefour.com", region: "EU/APAC" },
+    { name: "Lotte Mart", url: "https://www.lottemart.com", region: "KR" },
+    { name: "H Mart", url: "https://www.hmart.com", region: "US/KR" },
+    { name: "99 Ranch Market", url: "https://www.99ranch.com", region: "US" }
+  ];
+
+  function findKnownStore(name) {
+    const lower = name.toLowerCase().trim();
+    return KNOWN_STORES.find(s => s.name.toLowerCase() === lower);
+  }
+
+  function searchKnownStores(query) {
+    const lower = query.toLowerCase().trim();
+    if (!lower) return [];
+    return KNOWN_STORES.filter(s => s.name.toLowerCase().includes(lower));
+  }
+
   // ─── CUSTOM STORES UI ──────────────────────────────
 
   function generateStoreId(name) {
@@ -448,13 +514,17 @@
     });
   }
 
-  function addCustomStore(name) {
+  function addCustomStore(name, knownUrl) {
     const trimmed = name.trim();
     if (!trimmed) return;
 
     const stores = preferences.customStores || [];
     // Prevent duplicate names
     if (stores.some(s => s.name.toLowerCase() === trimmed.toLowerCase())) return;
+
+    // Auto-populate URL from known stores directory
+    const known = findKnownStore(trimmed);
+    const url = knownUrl || (known ? known.url : "");
 
     const nextColorIndex = stores.length > 0
       ? (Math.max(...stores.map(s => s.colorIndex)) + 1) % STORE_COLORS.length
@@ -464,18 +534,65 @@
       id: generateStoreId(trimmed),
       name: trimmed,
       tagline: "",
-      url: "",
+      url: url,
       colorIndex: nextColorIndex,
       categories: []
     });
 
     preferences.customStores = stores;
     renderCustomStores();
+    hideStoreSuggestions();
   }
 
   function resetStoresToDefaults() {
     preferences.customStores = buildDefaultStores();
     renderCustomStores();
+  }
+
+  // ─── STORE AUTOCOMPLETE ───────────────────────────
+
+  function hideStoreSuggestions() {
+    const el = document.getElementById("store-suggestions");
+    if (el) el.classList.add("hidden");
+  }
+
+  function renderStoreSuggestions(query, inputEl) {
+    const suggestionsEl = document.getElementById("store-suggestions");
+    if (!suggestionsEl) return;
+
+    const matches = searchKnownStores(query);
+    if (matches.length === 0 || !query.trim()) {
+      suggestionsEl.classList.add("hidden");
+      return;
+    }
+
+    // Filter out stores already added
+    const existing = (preferences.customStores || []).map(s => s.name.toLowerCase());
+    const filtered = matches.filter(s => !existing.includes(s.name.toLowerCase()));
+
+    if (filtered.length === 0) {
+      suggestionsEl.classList.add("hidden");
+      return;
+    }
+
+    suggestionsEl.innerHTML = filtered.map(s =>
+      `<div class="store-suggestion" data-name="${s.name}" data-url="${s.url}">
+        <span class="store-suggestion-name">${s.name}</span>
+        <span class="store-suggestion-region">${s.region}</span>
+      </div>`
+    ).join("");
+
+    suggestionsEl.classList.remove("hidden");
+
+    suggestionsEl.querySelectorAll(".store-suggestion").forEach(el => {
+      el.addEventListener("click", () => {
+        const name = el.dataset.name;
+        const url = el.dataset.url;
+        addCustomStore(name, url);
+        inputEl.value = "";
+        suggestionsEl.classList.add("hidden");
+      });
+    });
   }
 
   // ─── SHAREABLE LINK ────────────────────────────────
@@ -625,7 +742,7 @@
       });
     }
 
-    // Add store button
+    // Add store button + autocomplete
     const addStoreBtn = document.getElementById("btn-add-store");
     const storeInput = document.getElementById("input-new-store");
     if (addStoreBtn && storeInput) {
@@ -639,13 +756,23 @@
           addCustomStore(storeInput.value);
           storeInput.value = "";
         }
+        if (e.key === "Escape") {
+          hideStoreSuggestions();
+        }
       });
-    }
-
-    // Reset stores button
-    const resetStoresBtn = document.getElementById("btn-reset-stores");
-    if (resetStoresBtn) {
-      resetStoresBtn.addEventListener("click", resetStoresToDefaults);
+      storeInput.addEventListener("input", () => {
+        renderStoreSuggestions(storeInput.value, storeInput);
+      });
+      storeInput.addEventListener("focus", () => {
+        if (storeInput.value.trim()) {
+          renderStoreSuggestions(storeInput.value, storeInput);
+        }
+      });
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".store-autocomplete-wrapper")) {
+          hideStoreSuggestions();
+        }
+      });
     }
 
     // Save button
