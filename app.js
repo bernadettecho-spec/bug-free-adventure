@@ -19,7 +19,14 @@
     // Fallback defaults if preferences module not loaded
     return {
       maxCookTime: 30,
-      cuisines: { italian: true, japanese: true, chinese: true, comfort: true, adventure: false },
+      cuisines: {
+        american: true, chinese: true, french: true, indian: true,
+        italian: true, japanese: true, korean: true, mexican: true,
+        thai: true, comfort: true, adventure: false, brazilian: false,
+        ethiopian: false, greek: false, lebanese: false, moroccan: false,
+        peruvian: false, spanish: false, turkish: false, vietnamese: false,
+        vegetarian: false, vegan: false
+      },
       adventureLevel: 1,
       excludedIngredients: []
     };
@@ -141,20 +148,28 @@
   }
 
   function getCuisineTargetForDay(dayIndex, weekIndex) {
-    // Rotate cuisines across the week for variety
-    const pattern = [
-      ["italian", "japanese"],
-      ["chinese", "comfort"],
-      ["japanese", "italian"],
-      ["italian", "chinese"],
-      ["chinese", "japanese"],
-      ["adventure", "italian"],
-      ["japanese", "chinese"]
-    ];
+    // Build dynamic cuisine list from enabled preferences
+    const prefs = getPrefs();
+    const enabledCuisines = Object.entries(prefs.cuisines)
+      .filter(([, v]) => v)
+      .map(([k]) => k);
 
-    // Shift pattern based on week to avoid same day always having same cuisine
-    const shifted = (dayIndex + weekIndex) % 7;
-    return pattern[shifted];
+    if (enabledCuisines.length === 0) return ["comfort", "comfort"];
+
+    // Use a deterministic shuffle based on weekIndex so each week gets
+    // a unique rotation, avoiding repeated weekly patterns
+    const shuffled = [...enabledCuisines];
+    let seed = (weekIndex + 1) * 2654435761; // Knuth multiplicative hash
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+      const j = (seed >>> 0) % (i + 1);
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    // Assign lunch and dinner cuisines from the shuffled list
+    const lunchIdx = (dayIndex * 2) % shuffled.length;
+    const dinnerIdx = (dayIndex * 2 + 1) % shuffled.length;
+    return [shuffled[lunchIdx], shuffled[dinnerIdx]];
   }
 
   function selectRecipe(pool, excludeIds, preferredCuisine, adventureBoost, selectedSoFar) {

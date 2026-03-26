@@ -21,6 +21,23 @@
   --clr-chinese: #ffbe0b;
   --clr-comfort: #c77dff;
   --clr-adventure: #00bbf9;
+  --clr-american: #e07a5f;
+  --clr-brazilian: #81b622;
+  --clr-ethiopian: #d4a373;
+  --clr-french: #457b9d;
+  --clr-greek: #2a9d8f;
+  --clr-indian: #e9c46a;
+  --clr-korean: #f4845f;
+  --clr-lebanese: #7c9885;
+  --clr-mexican: #f72585;
+  --clr-moroccan: #c1666b;
+  --clr-peruvian: #e76f51;
+  --clr-spanish: #d62828;
+  --clr-thai: #06d6a0;
+  --clr-turkish: #118ab2;
+  --clr-vietnamese: #83c5be;
+  --clr-vegetarian: #52b788;
+  --clr-vegan: #40916c;
   --radius: 16px;
   --shadow: 0 4px 12px rgba(0,0,0,0.06);
   --shadow-hover: 0 8px 24px rgba(0,0,0,0.12);
@@ -416,6 +433,23 @@ header h1::before { content: "\1F468\200D\1F373 "; }
 .tag-chinese { background: #fff3cd; color: #c68f00; }
 .tag-comfort { background: #f0e0ff; color: #8e44ad; }
 .tag-adventure { background: #d4f0ff; color: #0077b6; }
+.tag-american { background: #fde8e2; color: #b5563a; }
+.tag-brazilian { background: #e8f5d0; color: #5a7a14; }
+.tag-ethiopian { background: #f5e6d3; color: #8b6914; }
+.tag-french { background: #dde8f0; color: #2a5070; }
+.tag-greek { background: #d4f0eb; color: #1a7a6e; }
+.tag-indian { background: #fdf3d4; color: #9a7b1a; }
+.tag-korean { background: #fde4db; color: #c2503e; }
+.tag-lebanese { background: #dde8df; color: #4d6e54; }
+.tag-mexican { background: #fdd5e8; color: #b81a5a; }
+.tag-moroccan { background: #f0d5d7; color: #8e3a3e; }
+.tag-peruvian { background: #fde0d5; color: #b84a2e; }
+.tag-spanish { background: #f5d0d0; color: #a31e1e; }
+.tag-thai { background: #d0f5eb; color: #05815e; }
+.tag-turkish { background: #d0e8f2; color: #0a6a8e; }
+.tag-vietnamese { background: #d8f0ed; color: #3a8a80; }
+.tag-vegetarian { background: #d8f0e0; color: #2d7a4a; }
+.tag-vegan { background: #d0e8d8; color: #286e48; }
 .tag-soup { background: #fff3e0; color: #e65100; }
 .tag-rice { background: #e8f5e9; color: #2e7d32; }
 .tag-noodle { background: #fce4ec; color: #c62828; }
@@ -887,11 +921,18 @@ header h1::before { content: "\1F468\200D\1F373 "; }
   border-radius: 0 0 10px 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   z-index: 100;
-  max-height: 200px;
+  max-height: 260px;
   overflow-y: auto;
 }
 
 .cuisine-suggestions.hidden { display: none; }
+
+.cuisine-suggestion-empty {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--clr-text-light);
+  font-style: italic;
+}
 
 .cuisine-suggestion {
   display: flex;
@@ -922,6 +963,9 @@ header h1::before { content: "\1F468\200D\1F373 "; }
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 0.25rem;
 }
 
 .pref-checkbox {

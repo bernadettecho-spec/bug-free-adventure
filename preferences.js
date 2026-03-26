@@ -6,17 +6,46 @@
 (function () {
   "use strict";
 
+  // ─── CUISINE MASTER LIST (A-Z) ──────────────────────
+  // Single source of truth for all cuisines in the app
+
+  const CUISINE_OPTIONS = [
+    { key: "american",   label: "American",     defaultOn: true },
+    { key: "brazilian",  label: "Brazilian",     defaultOn: false },
+    { key: "chinese",    label: "Chinese",       defaultOn: true },
+    { key: "ethiopian",  label: "Ethiopian",     defaultOn: false },
+    { key: "french",     label: "French",        defaultOn: true },
+    { key: "greek",      label: "Greek",         defaultOn: false },
+    { key: "indian",     label: "Indian",        defaultOn: true },
+    { key: "italian",    label: "Italian",       defaultOn: true },
+    { key: "japanese",   label: "Japanese",      defaultOn: true },
+    { key: "korean",     label: "Korean",        defaultOn: true },
+    { key: "lebanese",   label: "Lebanese",      defaultOn: false },
+    { key: "mexican",    label: "Mexican",       defaultOn: true },
+    { key: "moroccan",   label: "Moroccan",      defaultOn: false },
+    { key: "peruvian",   label: "Peruvian",      defaultOn: false },
+    { key: "spanish",    label: "Spanish",       defaultOn: false },
+    { key: "thai",       label: "Thai",          defaultOn: true },
+    { key: "turkish",    label: "Turkish",       defaultOn: false },
+    { key: "vietnamese", label: "Vietnamese",    defaultOn: false },
+    { key: "vegetarian", label: "Vegetarian",    defaultOn: false },
+    { key: "vegan",      label: "Vegan",         defaultOn: false },
+    { key: "comfort",    label: "Comfort Food",  defaultOn: true },
+    { key: "adventure",  label: "Adventure",     defaultOn: false }
+  ];
+
+  // Build default cuisines object from the master list
+  function buildDefaultCuisines() {
+    const obj = {};
+    CUISINE_OPTIONS.forEach(c => { obj[c.key] = c.defaultOn; });
+    return obj;
+  }
+
   // ─── DEFAULT PREFERENCES ───────────────────────────
 
   const DEFAULTS = {
     maxCookTime: 30,       // minutes
-    cuisines: {
-      italian: true,
-      japanese: true,
-      chinese: true,
-      comfort: true,
-      adventure: false      // disabled by default for picky eaters
-    },
+    cuisines: buildDefaultCuisines(),
     adventureLevel: 1,      // 1 = cautious, 2 = moderate, 3 = adventurous
     excludedIngredients: [], // e.g. ["peanut butter", "tofu"]
     childAges: "2-4",       // display label
@@ -100,6 +129,21 @@
     return true;
   }
 
+  // ─── DYNAMIC CUISINE CHECKBOXES ─────────────────────
+
+  function renderCuisineCheckboxes() {
+    const container = document.getElementById("cuisine-checkboxes");
+    if (!container) return;
+
+    container.innerHTML = CUISINE_OPTIONS.map(c => {
+      const checked = preferences.cuisines[c.key] ? "checked" : "";
+      return `<label class="pref-checkbox">
+        <input type="checkbox" id="pref-cuisine-${c.key}" ${checked}>
+        <span class="pref-checkbox-label">${c.label}</span>
+      </label>`;
+    }).join("");
+  }
+
   // ─── PREFERENCES UI ───────────────────────────────
 
   function showPreferencesModal() {
@@ -124,11 +168,8 @@
       if (sliderLabel) sliderLabel.textContent = `${preferences.maxCookTime} mins`;
     }
 
-    // Cuisine checkboxes
-    for (const [cuisine, enabled] of Object.entries(preferences.cuisines)) {
-      const cb = document.getElementById(`pref-cuisine-${cuisine}`);
-      if (cb) cb.checked = enabled;
-    }
+    // Render and update cuisine checkboxes
+    renderCuisineCheckboxes();
 
     // Adventure level
     const adventureSlider = document.getElementById("pref-adventure");
@@ -178,13 +219,35 @@
 
   // ─── CUISINE AUTOCOMPLETE ──────────────────────────
 
-  const CUISINE_OPTIONS = [
-    { key: "italian", label: "Italian" },
-    { key: "japanese", label: "Japanese" },
-    { key: "chinese", label: "Chinese" },
-    { key: "comfort", label: "Comfort Food" },
-    { key: "adventure", label: "Adventure" }
-  ];
+  function renderSuggestions(suggestionsEl, list, searchInput) {
+    suggestionsEl.innerHTML = list.map(c => {
+      const cb = document.getElementById(`pref-cuisine-${c.key}`);
+      const isChecked = cb ? cb.checked : !!preferences.cuisines[c.key];
+      return `<div class="cuisine-suggestion" data-key="${c.key}">
+        <span>${c.label}</span>
+        <span class="cuisine-suggestion-status">${isChecked ? "&#10003; included" : "not included"}</span>
+      </div>`;
+    }).join("");
+
+    suggestionsEl.classList.remove("hidden");
+
+    suggestionsEl.querySelectorAll(".cuisine-suggestion").forEach(el => {
+      el.addEventListener("click", () => {
+        const key = el.dataset.key;
+        const cb = document.getElementById(`pref-cuisine-${key}`);
+        if (cb) {
+          cb.checked = !cb.checked;
+          const label = cb.closest(".pref-checkbox");
+          if (label) {
+            label.classList.add("cuisine-highlight");
+            setTimeout(() => label.classList.remove("cuisine-highlight"), 800);
+          }
+        }
+        searchInput.value = "";
+        suggestionsEl.classList.add("hidden");
+      });
+    });
+  }
 
   function initCuisineAutocomplete() {
     const searchInput = document.getElementById("cuisine-search");
@@ -203,39 +266,12 @@
       );
 
       if (matches.length === 0) {
-        suggestionsEl.classList.add("hidden");
+        suggestionsEl.innerHTML = '<div class="cuisine-suggestion-empty">No matching cuisines</div>';
+        suggestionsEl.classList.remove("hidden");
         return;
       }
 
-      suggestionsEl.innerHTML = matches.map(c => {
-        const cb = document.getElementById(`pref-cuisine-${c.key}`);
-        const isChecked = cb ? cb.checked : false;
-        return `<div class="cuisine-suggestion" data-key="${c.key}">
-          <span>${c.label}</span>
-          <span class="cuisine-suggestion-status">${isChecked ? "&#10003; included" : "not included"}</span>
-        </div>`;
-      }).join("");
-
-      suggestionsEl.classList.remove("hidden");
-
-      // Attach click handlers to suggestions
-      suggestionsEl.querySelectorAll(".cuisine-suggestion").forEach(el => {
-        el.addEventListener("click", () => {
-          const key = el.dataset.key;
-          const cb = document.getElementById(`pref-cuisine-${key}`);
-          if (cb) {
-            cb.checked = !cb.checked;
-            // Scroll the checkbox into view with highlight
-            const label = cb.closest(".pref-checkbox");
-            if (label) {
-              label.classList.add("cuisine-highlight");
-              setTimeout(() => label.classList.remove("cuisine-highlight"), 800);
-            }
-          }
-          searchInput.value = "";
-          suggestionsEl.classList.add("hidden");
-        });
-      });
+      renderSuggestions(suggestionsEl, matches, searchInput);
     });
 
     // Close suggestions when clicking outside
@@ -248,33 +284,7 @@
     // Show all options on focus when input is empty
     searchInput.addEventListener("focus", () => {
       if (!searchInput.value.trim()) {
-        // Show all options
-        suggestionsEl.innerHTML = CUISINE_OPTIONS.map(c => {
-          const cb = document.getElementById(`pref-cuisine-${c.key}`);
-          const isChecked = cb ? cb.checked : false;
-          return `<div class="cuisine-suggestion" data-key="${c.key}">
-            <span>${c.label}</span>
-            <span class="cuisine-suggestion-status">${isChecked ? "&#10003; included" : "not included"}</span>
-          </div>`;
-        }).join("");
-        suggestionsEl.classList.remove("hidden");
-
-        suggestionsEl.querySelectorAll(".cuisine-suggestion").forEach(el => {
-          el.addEventListener("click", () => {
-            const key = el.dataset.key;
-            const cb = document.getElementById(`pref-cuisine-${key}`);
-            if (cb) {
-              cb.checked = !cb.checked;
-              const label = cb.closest(".pref-checkbox");
-              if (label) {
-                label.classList.add("cuisine-highlight");
-                setTimeout(() => label.classList.remove("cuisine-highlight"), 800);
-              }
-            }
-            searchInput.value = "";
-            suggestionsEl.classList.add("hidden");
-          });
-        });
+        renderSuggestions(suggestionsEl, CUISINE_OPTIONS, searchInput);
       }
     });
   }
@@ -371,6 +381,9 @@
       loadFromLocal();
     }
 
+    // Render dynamic cuisine checkboxes
+    renderCuisineCheckboxes();
+
     // Preferences button
     const prefsBtn = document.getElementById("btn-preferences");
     if (prefsBtn) prefsBtn.addEventListener("click", showPreferencesModal);
@@ -454,6 +467,7 @@
   window.LittleChefsPrefs = {
     initPreferencesUI,
     getPreferences: () => preferences,
+    getCuisineOptions: () => CUISINE_OPTIONS,
     resetPreferences: () => {
       preferences = JSON.parse(JSON.stringify(DEFAULTS));
       saveToLocal();
