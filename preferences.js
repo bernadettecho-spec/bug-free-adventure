@@ -68,6 +68,7 @@
         id: "little-farms",
         name: "Little Farms",
         tagline: "Premium groceries, dairy, meat & produce",
+        url: "https://www.littlefarms.com",
         colorIndex: 0,
         categories: ["Proteins", "Dairy", "Pantry", "Grains & Noodles", "Frozen", "Other"]
       },
@@ -75,6 +76,7 @@
         id: "talula-farms",
         name: "Talula Farms",
         tagline: "Organic produce & specialty items",
+        url: "https://www.talulafarms.com",
         colorIndex: 1,
         categories: ["Produce"]
       },
@@ -82,6 +84,7 @@
         id: "zairyo",
         name: "Zairyo",
         tagline: "Japanese & Asian specialty ingredients",
+        url: "https://zairyo.com",
         colorIndex: 2,
         categories: ["Asian & World Specialty"]
       }
@@ -406,8 +409,11 @@
                 </select>
               </div>
             ` : ""}
-            <div class="custom-store-tagline-edit">
+            <div class="custom-store-field-row">
               <input type="text" class="input-store-tagline" data-idx="${idx}" placeholder="Short description (optional)" value="${store.tagline || ""}">
+            </div>
+            <div class="custom-store-field-row">
+              <input type="url" class="input-store-url" data-idx="${idx}" placeholder="Store website URL (optional)" value="${store.url || ""}">
             </div>
           </div>
         </div>
@@ -458,6 +464,13 @@
         preferences.customStores[idx].tagline = input.value;
       });
     });
+
+    container.querySelectorAll(".input-store-url").forEach(input => {
+      input.addEventListener("input", () => {
+        const idx = parseInt(input.dataset.idx, 10);
+        preferences.customStores[idx].url = input.value;
+      });
+    });
   }
 
   function addCustomStore(name) {
@@ -476,6 +489,7 @@
       id: generateStoreId(trimmed),
       name: trimmed,
       tagline: "",
+      url: "",
       colorIndex: nextColorIndex,
       categories: []
     });
@@ -555,6 +569,7 @@
 
     // Save locally
     saveToLocal();
+    localStorage.setItem("littlechefs_has_visited", "1");
 
     // Save to cloud if logged in
     await saveToCloud();
@@ -566,6 +581,10 @@
 
     hidePreferencesModal();
     window.LittleChefs.showToast("Preferences saved! Meals updated.");
+  }
+
+  function showFirstVisit() {
+    showPreferencesModal();
   }
 
   // ─── INIT ──────────────────────────────────────────
@@ -689,6 +708,7 @@
 
   window.LittleChefsPrefs = {
     initPreferencesUI,
+    showFirstVisit,
     getPreferences: () => preferences,
     getCuisineOptions: () => CUISINE_OPTIONS,
     getStoreColors: () => STORE_COLORS,

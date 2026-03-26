@@ -503,6 +503,17 @@ header h1::before { content: "\1F468\200D\1F373 "; }
 .store-header.talula-farms { background: linear-gradient(135deg, #7f4f24, #c68b59); }
 .store-header.zairyo { background: linear-gradient(135deg, #9b2226, #e63946); }
 
+.store-link {
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(255,255,255,0.5);
+  transition: border-color 0.2s;
+}
+
+.store-link:hover {
+  border-bottom-color: white;
+}
+
 .store-tagline {
   font-size: 0.7rem;
   font-weight: 400;
@@ -1186,11 +1197,12 @@ header h1::before { content: "\1F468\200D\1F373 "; }
   cursor: pointer;
 }
 
-.custom-store-tagline-edit {
+.custom-store-field-row {
   margin-top: 0.25rem;
 }
 
-.input-store-tagline {
+.input-store-tagline,
+.input-store-url {
   width: 100%;
   padding: 0.3rem 0.5rem;
   border-radius: 8px;

@@ -380,10 +380,14 @@
       const color = getStoreColor(store);
       const gradient = `linear-gradient(135deg, ${color.bg[0]}, ${color.bg[1]})`;
 
+      const nameHtml = store.url
+        ? `<a href="${store.url}" target="_blank" rel="noopener" class="store-link">${store.name}</a>`
+        : `<span>${store.name}</span>`;
+
       return `
         <div class="store-card">
           <div class="store-header" style="background: ${gradient}">
-            <span>${store.name}</span>
+            ${nameHtml}
             <span class="store-tagline">${store.tagline || ""}</span>
           </div>
           ${categoryEntries.map(([category, items]) => `
@@ -611,7 +615,16 @@
       doc.setFontSize(8);
       doc.text(store.tagline || "", 196, 46, { align: "right" });
 
-      let y = 58;
+      // Store URL below header
+      let y = 54;
+      if (store.url) {
+        doc.setFontSize(7);
+        doc.setTextColor(c[0], c[1], c[2]);
+        doc.textWithLink(store.url, 14, y, { url: store.url });
+        y = 60;
+      } else {
+        y = 58;
+      }
 
       categoryEntries.forEach(([category, items]) => {
         if (y > 265) { doc.addPage(); y = 20; }
@@ -760,10 +773,19 @@
       weekSeed = parseInt(params.get("seed"), 10) || Date.now();
     }
 
-    generateAllWeeks();
-    renderWeekLabel();
-    renderMealPlan();
-    renderGroceryList();
+    // First visit: show preferences before generating recipes
+    const hasVisited = localStorage.getItem("littlechefs_has_visited");
+    if (!hasVisited && !params.has("maxTime") && !params.has("cuisines")) {
+      // Show preferences modal first; recipes generate after save
+      if (window.LittleChefsPrefs && window.LittleChefsPrefs.showFirstVisit) {
+        window.LittleChefsPrefs.showFirstVisit();
+      }
+    } else {
+      generateAllWeeks();
+      renderWeekLabel();
+      renderMealPlan();
+      renderGroceryList();
+    }
 
     // Event listeners
     document.getElementById("btn-prev-week").addEventListener("click", () => {
