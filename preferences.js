@@ -75,6 +75,7 @@
     excludedIngredients: [], // e.g. ["peanut butter", "tofu"]
     childAges: "2-4",       // display label
     mealsPerDay: 2,          // lunch + dinner
+    overlapPreference: 50,   // 0 = more variety, 100 = less waste
     customStores: buildDefaultStores()
   };
 
@@ -210,6 +211,14 @@
         const labels = ["", "Cautious", "Moderate", "Adventurous"];
         adventureLabel.textContent = labels[preferences.adventureLevel] || "Cautious";
       }
+    }
+
+    // Overlap preference
+    const overlapSlider = document.getElementById("pref-overlap");
+    const overlapLabel = document.getElementById("pref-overlap-label");
+    if (overlapSlider) {
+      overlapSlider.value = preferences.overlapPreference || 50;
+      if (overlapLabel) overlapLabel.textContent = `${overlapSlider.value}% overlap preference`;
     }
 
     // Excluded ingredients
@@ -666,6 +675,9 @@
     const adventureSlider = document.getElementById("pref-adventure");
     if (adventureSlider) preferences.adventureLevel = parseInt(adventureSlider.value, 10);
 
+    const overlapSlider = document.getElementById("pref-overlap");
+    if (overlapSlider) preferences.overlapPreference = parseInt(overlapSlider.value, 10);
+
     // Ensure at least one cuisine is selected
     const anyEnabled = Object.values(preferences.cuisines).some(v => v);
     if (!anyEnabled) {
@@ -739,6 +751,15 @@
       adventureSlider.addEventListener("input", () => {
         const labels = ["", "Cautious", "Moderate", "Adventurous"];
         adventureLabel.textContent = labels[parseInt(adventureSlider.value, 10)] || "Cautious";
+      });
+    }
+
+    // Overlap slider
+    const overlapSlider = document.getElementById("pref-overlap");
+    const overlapLabel = document.getElementById("pref-overlap-label");
+    if (overlapSlider && overlapLabel) {
+      overlapSlider.addEventListener("input", () => {
+        overlapLabel.textContent = `${overlapSlider.value}% overlap preference`;
       });
     }
 

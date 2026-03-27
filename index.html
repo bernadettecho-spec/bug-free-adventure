@@ -191,6 +191,18 @@
         <div class="pref-adventure-desc" id="pref-adventure-label">Cautious</div>
       </div>
 
+      <!-- Ingredient Overlap -->
+      <div class="pref-section">
+        <label class="pref-label">Ingredient overlap between meals</label>
+        <p class="pref-hint">Higher overlap = fewer unique ingredients to buy, less waste. Lower = more variety.</p>
+        <div class="pref-slider-row">
+          <span class="pref-slider-hint">More variety</span>
+          <input type="range" id="pref-overlap" min="0" max="100" step="10" value="50" class="pref-slider">
+          <span class="pref-slider-hint">Less waste</span>
+        </div>
+        <div class="pref-overlap-desc" id="pref-overlap-label">50% overlap preference</div>
+      </div>
+
       <!-- Excluded Ingredients -->
       <div class="pref-section">
         <label class="pref-label">Ingredients to avoid (allergies, dislikes)</label>

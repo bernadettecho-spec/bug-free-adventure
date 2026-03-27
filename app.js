@@ -96,7 +96,8 @@
         vegetarian: false, vegan: false
       },
       adventureLevel: 1,
-      excludedIngredients: []
+      excludedIngredients: [],
+      overlapPreference: 50
     };
   }
 
@@ -246,6 +247,7 @@
     if (available.length === 0) return null;
 
     const ratings = loadRatings();
+    const prefs = getPrefs();
 
     // Score recipes
     const scored = available.map(r => {
@@ -268,7 +270,8 @@
       // INGREDIENT OVERLAP BONUS — strongly prefer recipes sharing ingredients
       // with those already selected for this week (reduces waste, maximises freshness)
       const overlap = ingredientOverlapScore(r, selectedSoFar || []);
-      score += overlap * 4; // each shared ingredient adds significant weight
+      const overlapMultiplier = (prefs.overlapPreference / 100) * 8;
+      score += overlap * overlapMultiplier;
 
       // RATING BONUS/PENALTY
       const rating = ratings[r.id] || 0;
