@@ -370,6 +370,18 @@
     return STORE_COLORS[store.colorIndex % STORE_COLORS.length];
   }
 
+  function buildSearchLink(searchUrl, query) {
+    if (!searchUrl) return "";
+    // Clean the ingredient name for search: remove quantities, parentheses, commas
+    const cleaned = query
+      .replace(/\s*\(.*?\)\s*/g, " ")  // remove parenthetical notes
+      .replace(/,.*$/, "")              // remove after comma
+      .replace(/\d+\s*(g|ml|kg|l|oz|lb|tsp|tbsp|cup|piece|bunch|clove|slice|can|tin)\b/gi, "") // remove quantities
+      .trim();
+    const encoded = encodeURIComponent(cleaned);
+    return searchUrl.replace("{q}", encoded);
+  }
+
   function renderGroceryList() {
     const container = document.getElementById("grocery-stores");
     const plan = weekPlans[currentWeek];
@@ -384,6 +396,7 @@
 
       const color = getStoreColor(store);
       const gradient = `linear-gradient(135deg, ${color.bg[0]}, ${color.bg[1]})`;
+      const hasSearch = !!store.searchUrl;
 
       const nameHtml = store.url
         ? `<a href="${store.url}" target="_blank" rel="noopener" class="store-link">${store.name}</a>`
@@ -392,18 +405,26 @@
       return `
         <div class="store-card">
           <div class="store-header" style="background: ${gradient}">
-            ${nameHtml}
-            <span class="store-tagline">${store.tagline || ""}</span>
+            <div class="store-header-left">
+              ${nameHtml}
+              <span class="store-tagline">${store.tagline || ""}</span>
+            </div>
+            ${hasSearch ? `<a href="${store.url || store.searchUrl.replace("{q}", "")}" target="_blank" rel="noopener" class="store-shop-btn">Shop online &#8599;</a>` : ""}
           </div>
           ${categoryEntries.map(([category, items]) => `
             <div class="grocery-category">
               <h4>${category}</h4>
-              ${Object.entries(items).map(([itemName, info]) => `
+              ${Object.entries(items).map(([itemName, info]) => {
+                const searchHref = hasSearch ? buildSearchLink(store.searchUrl, itemName) : "";
+                return `
                 <div class="grocery-item">
                   <span class="grocery-item-name">${itemName}</span>
-                  <span class="grocery-item-qty">${info.qty}${info.recipes.length > 1 ? ` (x${info.recipes.length})` : ""}</span>
-                </div>
-              `).join("")}
+                  <span class="grocery-item-right">
+                    <span class="grocery-item-qty">${info.qty}${info.recipes.length > 1 ? ` (x${info.recipes.length})` : ""}</span>
+                    ${searchHref ? `<a href="${searchHref}" target="_blank" rel="noopener" class="grocery-item-search" title="Search ${store.name} for ${itemName}">&#128269;</a>` : ""}
+                  </span>
+                </div>`;
+              }).join("")}
             </div>
           `).join("")}
         </div>

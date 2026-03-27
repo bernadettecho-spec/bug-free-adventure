@@ -499,9 +499,28 @@ header h1::before { content: "\1F468\200D\1F373 "; }
   border-radius: 14px 14px 0 0;
 }
 
-.store-header.little-farms { background: linear-gradient(135deg, #2d6a4f, #52b788); }
-.store-header.talula-farms { background: linear-gradient(135deg, #7f4f24, #c68b59); }
-.store-header.zairyo { background: linear-gradient(135deg, #9b2226, #e63946); }
+.store-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.store-shop-btn {
+  color: white;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.store-shop-btn:hover {
+  background: rgba(255,255,255,0.35);
+}
 
 .store-link {
   color: white;
@@ -537,12 +556,32 @@ header h1::before { content: "\1F468\200D\1F373 "; }
 .grocery-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 0.3rem 0;
   font-size: 0.88rem;
 }
 
 .grocery-item-name { color: var(--clr-text); }
-.grocery-item-qty { color: var(--clr-text-light); font-size: 0.8rem; }
+
+.grocery-item-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.grocery-item-qty { color: var(--clr-text-light); font-size: 0.8rem; white-space: nowrap; }
+
+.grocery-item-search {
+  text-decoration: none;
+  font-size: 0.82rem;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  line-height: 1;
+}
+
+.grocery-item:hover .grocery-item-search {
+  opacity: 1;
+}
 
 .store-card > :last-child { padding-bottom: 1rem; }
 
@@ -1275,12 +1314,39 @@ header h1::before { content: "\1F468\200D\1F373 "; }
   color: var(--clr-text);
 }
 
+.store-suggestion-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.store-suggestion-badge {
+  font-size: 0.65rem;
+  color: #2d6a4f;
+  background: #d8f3dc;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
 .store-suggestion-region {
   font-size: 0.7rem;
   color: var(--clr-text-light);
   background: var(--clr-bg);
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
+}
+
+.search-url-status {
+  font-size: 0.7rem;
+  color: var(--clr-text-light);
+  display: inline-block;
+  margin-top: 0.2rem;
+}
+
+.search-url-status.active {
+  color: #2d6a4f;
+  font-weight: 600;
 }
 
 .unassigned-warning {

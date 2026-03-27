@@ -326,55 +326,55 @@
   // Used for URL auto-populate and suggestions when typing store names
 
   const KNOWN_STORES = [
-    // Singapore
-    { name: "Little Farms", url: "https://www.littlefarms.com", region: "SG" },
-    { name: "Talula Farms", url: "https://www.talulafarms.com", region: "SG" },
-    { name: "Zairyo", url: "https://zairyo.com", region: "SG" },
-    { name: "FairPrice", url: "https://www.fairprice.com.sg", region: "SG" },
-    { name: "FairPrice Finest", url: "https://www.fairprice.com.sg", region: "SG" },
-    { name: "FairPrice Xtra", url: "https://www.fairprice.com.sg", region: "SG" },
-    { name: "Cold Storage", url: "https://coldstorage.com.sg", region: "SG" },
-    { name: "Giant", url: "https://giant.sg", region: "SG" },
-    { name: "Sheng Siong", url: "https://www.shengsiong.com.sg", region: "SG" },
-    { name: "RedMart", url: "https://www.lazada.sg/shop/redmart", region: "SG" },
-    { name: "Don Don Donki", url: "https://www.dondondonki.com", region: "SG" },
-    { name: "Meidi-Ya", url: "https://www.meidi-ya.com.sg", region: "SG" },
-    { name: "Isetan Scotts", url: "https://www.isetan.com.sg", region: "SG" },
-    { name: "Isetan", url: "https://www.isetan.com.sg", region: "SG" },
-    { name: "Jason's Deli", url: "https://jasons.com.sg", region: "SG" },
-    { name: "Ryan's Grocery", url: "https://www.rfryan.com", region: "SG" },
-    { name: "Huber's Butchery", url: "https://www.hubers.com.sg", region: "SG" },
-    { name: "The Butcher", url: "https://www.thebutcher.com.sg", region: "SG" },
-    { name: "Sasha's Fine Foods", url: "https://www.sashasfinefoods.com", region: "SG" },
-    { name: "MarketFresh", url: "https://marketfresh.com.sg", region: "SG" },
-    { name: "The Fish Wife", url: "https://www.thefishwife.com.sg", region: "SG" },
-    { name: "Greengrocer", url: "https://greengrocer.com.sg", region: "SG" },
-    { name: "Scoop Wholefoods", url: "https://www.scoopwholefoods.com", region: "SG" },
-    { name: "Amazon Fresh", url: "https://www.amazon.sg/fresh", region: "SG" },
+    // Singapore — stores with searchUrl support deep-link product search
+    { name: "Little Farms", url: "https://littlefarms.com", searchUrl: "https://littlefarms.com/catalogsearch/result/?q={q}", region: "SG" },
+    { name: "Talula Farms", url: "https://www.talulafarms.com", searchUrl: "", region: "SG" },
+    { name: "Zairyo", url: "https://zairyo.com.sg", searchUrl: "https://zairyo.com.sg/search?q={q}", region: "SG" },
+    { name: "FairPrice", url: "https://www.fairprice.com.sg", searchUrl: "https://www.fairprice.com.sg/search?query={q}", region: "SG" },
+    { name: "FairPrice Finest", url: "https://www.fairprice.com.sg", searchUrl: "https://www.fairprice.com.sg/search?query={q}", region: "SG" },
+    { name: "FairPrice Xtra", url: "https://www.fairprice.com.sg", searchUrl: "https://www.fairprice.com.sg/search?query={q}", region: "SG" },
+    { name: "Cold Storage", url: "https://coldstorage.com.sg", searchUrl: "https://coldstorage.com.sg/search?q={q}", region: "SG" },
+    { name: "Giant", url: "https://giant.sg", searchUrl: "https://giant.sg/search?q={q}", region: "SG" },
+    { name: "Sheng Siong", url: "https://www.shengsiong.com.sg", searchUrl: "", region: "SG" },
+    { name: "RedMart", url: "https://www.lazada.sg/shop/redmart", searchUrl: "https://www.lazada.sg/catalog/?q={q}&from=redmart", region: "SG" },
+    { name: "Don Don Donki", url: "https://www.dondondonki.com", searchUrl: "", region: "SG" },
+    { name: "Meidi-Ya", url: "https://www.meidi-ya.com.sg", searchUrl: "", region: "SG" },
+    { name: "Isetan Scotts", url: "https://www.isetan.com.sg", searchUrl: "", region: "SG" },
+    { name: "Isetan", url: "https://www.isetan.com.sg", searchUrl: "", region: "SG" },
+    { name: "Jason's Deli", url: "https://jasons.com.sg", searchUrl: "", region: "SG" },
+    { name: "Ryan's Grocery", url: "https://www.rfryan.com", searchUrl: "https://www.rfryan.com/search?q={q}", region: "SG" },
+    { name: "Huber's Butchery", url: "https://www.hubers.com.sg", searchUrl: "https://www.hubers.com.sg/search?q={q}", region: "SG" },
+    { name: "The Butcher", url: "https://www.thebutcher.com.sg", searchUrl: "", region: "SG" },
+    { name: "Sasha's Fine Foods", url: "https://www.sashasfinefoods.com", searchUrl: "https://www.sashasfinefoods.com/search?q={q}", region: "SG" },
+    { name: "MarketFresh", url: "https://marketfresh.com.sg", searchUrl: "", region: "SG" },
+    { name: "The Fish Wife", url: "https://www.thefishwife.com.sg", searchUrl: "", region: "SG" },
+    { name: "Greengrocer", url: "https://greengrocer.com.sg", searchUrl: "", region: "SG" },
+    { name: "Scoop Wholefoods", url: "https://www.scoopwholefoods.com", searchUrl: "https://www.scoopwholefoods.com/search?q={q}", region: "SG" },
+    { name: "Amazon Fresh", url: "https://www.amazon.sg/fresh", searchUrl: "https://www.amazon.sg/s?k={q}&i=amazonfresh", region: "SG" },
     // International
-    { name: "Whole Foods", url: "https://www.wholefoodsmarket.com", region: "US" },
-    { name: "Whole Foods Market", url: "https://www.wholefoodsmarket.com", region: "US" },
-    { name: "Trader Joe's", url: "https://www.traderjoes.com", region: "US" },
-    { name: "Costco", url: "https://www.costco.com", region: "US" },
-    { name: "Kroger", url: "https://www.kroger.com", region: "US" },
-    { name: "Walmart", url: "https://www.walmart.com/grocery", region: "US" },
-    { name: "Target", url: "https://www.target.com/c/grocery", region: "US" },
-    { name: "Safeway", url: "https://www.safeway.com", region: "US" },
-    { name: "Publix", url: "https://www.publix.com", region: "US" },
-    { name: "Aldi", url: "https://www.aldi.com", region: "US/EU" },
-    { name: "Lidl", url: "https://www.lidl.com", region: "EU" },
-    { name: "Tesco", url: "https://www.tesco.com", region: "UK" },
-    { name: "Sainsbury's", url: "https://www.sainsburys.co.uk", region: "UK" },
-    { name: "Waitrose", url: "https://www.waitrose.com", region: "UK" },
-    { name: "Marks & Spencer", url: "https://www.marksandspencer.com/c/food-to-order", region: "UK" },
-    { name: "M&S Food", url: "https://www.marksandspencer.com/c/food-to-order", region: "UK" },
-    { name: "Ocado", url: "https://www.ocado.com", region: "UK" },
-    { name: "Coles", url: "https://www.coles.com.au", region: "AU" },
-    { name: "Woolworths", url: "https://www.woolworths.com.au", region: "AU" },
-    { name: "Carrefour", url: "https://www.carrefour.com", region: "EU/APAC" },
-    { name: "Lotte Mart", url: "https://www.lottemart.com", region: "KR" },
-    { name: "H Mart", url: "https://www.hmart.com", region: "US/KR" },
-    { name: "99 Ranch Market", url: "https://www.99ranch.com", region: "US" }
+    { name: "Whole Foods", url: "https://www.wholefoodsmarket.com", searchUrl: "https://www.wholefoodsmarket.com/search?text={q}", region: "US" },
+    { name: "Whole Foods Market", url: "https://www.wholefoodsmarket.com", searchUrl: "https://www.wholefoodsmarket.com/search?text={q}", region: "US" },
+    { name: "Trader Joe's", url: "https://www.traderjoes.com", searchUrl: "", region: "US" },
+    { name: "Costco", url: "https://www.costco.com", searchUrl: "https://www.costco.com/CatalogSearch?keyword={q}", region: "US" },
+    { name: "Kroger", url: "https://www.kroger.com", searchUrl: "https://www.kroger.com/search?query={q}", region: "US" },
+    { name: "Walmart", url: "https://www.walmart.com/grocery", searchUrl: "https://www.walmart.com/search?q={q}&cat_id=976759", region: "US" },
+    { name: "Target", url: "https://www.target.com/c/grocery", searchUrl: "https://www.target.com/s?searchTerm={q}&category=5xt1a", region: "US" },
+    { name: "Safeway", url: "https://www.safeway.com", searchUrl: "https://www.safeway.com/shop/search-results.html?q={q}", region: "US" },
+    { name: "Publix", url: "https://www.publix.com", searchUrl: "https://www.publix.com/shop/search?keyword={q}", region: "US" },
+    { name: "Aldi", url: "https://www.aldi.com", searchUrl: "", region: "US/EU" },
+    { name: "Lidl", url: "https://www.lidl.com", searchUrl: "", region: "EU" },
+    { name: "Tesco", url: "https://www.tesco.com", searchUrl: "https://www.tesco.com/groceries/en-GB/search?query={q}", region: "UK" },
+    { name: "Sainsbury's", url: "https://www.sainsburys.co.uk", searchUrl: "https://www.sainsburys.co.uk/gol-ui/SearchResults/{q}", region: "UK" },
+    { name: "Waitrose", url: "https://www.waitrose.com", searchUrl: "https://www.waitrose.com/ecom/shop/search?searchTerm={q}", region: "UK" },
+    { name: "Marks & Spencer", url: "https://www.marksandspencer.com/c/food-to-order", searchUrl: "", region: "UK" },
+    { name: "M&S Food", url: "https://www.marksandspencer.com/c/food-to-order", searchUrl: "", region: "UK" },
+    { name: "Ocado", url: "https://www.ocado.com", searchUrl: "https://www.ocado.com/search?entry={q}", region: "UK" },
+    { name: "Coles", url: "https://www.coles.com.au", searchUrl: "https://www.coles.com.au/search?q={q}", region: "AU" },
+    { name: "Woolworths", url: "https://www.woolworths.com.au", searchUrl: "https://www.woolworths.com.au/shop/search/products?searchTerm={q}", region: "AU" },
+    { name: "Carrefour", url: "https://www.carrefour.com", searchUrl: "", region: "EU/APAC" },
+    { name: "Lotte Mart", url: "https://www.lottemart.com", searchUrl: "", region: "KR" },
+    { name: "H Mart", url: "https://www.hmart.com", searchUrl: "https://www.hmart.com/search?q={q}", region: "US/KR" },
+    { name: "99 Ranch Market", url: "https://www.99ranch.com", searchUrl: "https://www.99ranch.com/search?q={q}", region: "US" }
   ];
 
   function findKnownStore(name) {
@@ -456,6 +456,10 @@
             <div class="custom-store-field-row">
               <input type="url" class="input-store-url" data-idx="${idx}" placeholder="Store website URL (optional)" value="${store.url || ""}">
             </div>
+            <div class="custom-store-field-row">
+              <input type="url" class="input-store-search-url" data-idx="${idx}" placeholder="Search URL template, e.g. https://store.com/search?q={q}" value="${store.searchUrl || ""}">
+              ${store.searchUrl ? '<span class="search-url-status active">Shop links active</span>' : '<span class="search-url-status">No shop links</span>'}
+            </div>
           </div>
         </div>
       `;
@@ -512,9 +516,16 @@
         preferences.customStores[idx].url = input.value;
       });
     });
+
+    container.querySelectorAll(".input-store-search-url").forEach(input => {
+      input.addEventListener("input", () => {
+        const idx = parseInt(input.dataset.idx, 10);
+        preferences.customStores[idx].searchUrl = input.value;
+      });
+    });
   }
 
-  function addCustomStore(name, knownUrl) {
+  function addCustomStore(name, knownUrl, knownSearchUrl) {
     const trimmed = name.trim();
     if (!trimmed) return;
 
@@ -522,9 +533,10 @@
     // Prevent duplicate names
     if (stores.some(s => s.name.toLowerCase() === trimmed.toLowerCase())) return;
 
-    // Auto-populate URL from known stores directory
+    // Auto-populate URL and searchUrl from known stores directory
     const known = findKnownStore(trimmed);
     const url = knownUrl || (known ? known.url : "");
+    const searchUrl = knownSearchUrl || (known ? known.searchUrl : "");
 
     const nextColorIndex = stores.length > 0
       ? (Math.max(...stores.map(s => s.colorIndex)) + 1) % STORE_COLORS.length
@@ -535,6 +547,7 @@
       name: trimmed,
       tagline: "",
       url: url,
+      searchUrl: searchUrl,
       colorIndex: nextColorIndex,
       categories: []
     });
@@ -576,8 +589,11 @@
     }
 
     suggestionsEl.innerHTML = filtered.map(s =>
-      `<div class="store-suggestion" data-name="${s.name}" data-url="${s.url}">
-        <span class="store-suggestion-name">${s.name}</span>
+      `<div class="store-suggestion" data-name="${s.name}" data-url="${s.url}" data-search-url="${s.searchUrl || ""}">
+        <div class="store-suggestion-left">
+          <span class="store-suggestion-name">${s.name}</span>
+          ${s.searchUrl ? '<span class="store-suggestion-badge">Shop online</span>' : ""}
+        </div>
         <span class="store-suggestion-region">${s.region}</span>
       </div>`
     ).join("");
@@ -588,7 +604,8 @@
       el.addEventListener("click", () => {
         const name = el.dataset.name;
         const url = el.dataset.url;
-        addCustomStore(name, url);
+        const searchUrl = el.dataset.searchUrl;
+        addCustomStore(name, url, searchUrl);
         inputEl.value = "";
         suggestionsEl.classList.add("hidden");
       });
