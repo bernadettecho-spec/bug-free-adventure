@@ -10,6 +10,74 @@
   let weekPlans = [];
   let usedIdsGlobal = new Set();
 
+  // ─── RECIPE RATINGS & SCHEDULES ────────────────────
+  // ratings: { "recipe-id": -1 | 1 | 2 }
+  // schedules: [{ recipeId, targetWeek, recurring, intervalWeeks }]
+
+  function loadRatings() {
+    try {
+      const saved = localStorage.getItem("littlechefs_ratings");
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) { return {}; }
+  }
+
+  function saveRatings(ratings) {
+    localStorage.setItem("littlechefs_ratings", JSON.stringify(ratings));
+  }
+
+  function loadSchedules() {
+    try {
+      const saved = localStorage.getItem("littlechefs_schedules");
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) { return []; }
+  }
+
+  function saveSchedules(schedules) {
+    localStorage.setItem("littlechefs_schedules", JSON.stringify(schedules));
+  }
+
+  function rateRecipe(recipeId, rating) {
+    const ratings = loadRatings();
+    if (ratings[recipeId] === rating) {
+      delete ratings[recipeId]; // toggle off
+    } else {
+      ratings[recipeId] = rating;
+    }
+    saveRatings(ratings);
+    return ratings[recipeId];
+  }
+
+  function scheduleRecipe(recipeId, weeksFromNow, recurring) {
+    const schedules = loadSchedules();
+    // Remove existing schedule for this recipe
+    const filtered = schedules.filter(s => s.recipeId !== recipeId);
+    filtered.push({
+      recipeId,
+      targetWeek: currentWeek + weeksFromNow,
+      recurring: recurring,
+      intervalWeeks: weeksFromNow
+    });
+    saveSchedules(filtered);
+  }
+
+  function getScheduledRecipeIds(weekIndex) {
+    const schedules = loadSchedules();
+    const ids = [];
+    schedules.forEach(s => {
+      if (s.recurring) {
+        // Check if this week matches the recurring pattern
+        if (weekIndex >= s.targetWeek && (weekIndex - s.targetWeek) % s.intervalWeeks === 0) {
+          ids.push(s.recipeId);
+        }
+      } else {
+        if (s.targetWeek === weekIndex) {
+          ids.push(s.recipeId);
+        }
+      }
+    });
+    return ids;
+  }
+
   // ─── PREFERENCES HELPERS ───────────────────────────
   // Get the current user preferences (from preferences.js module)
   function getPrefs() {
@@ -115,20 +183,21 @@
 
     const selected = [];
     const selectedIds = new Set();
+    const scheduledIds = getScheduledRecipeIds(weekIndex);
 
     for (let d = 0; d < 7; d++) {
       // Determine target cuisine distribution
       const targetCuisines = getCuisineTargetForDay(d, weekIndex);
 
-      // Select lunch (with ingredient overlap scoring)
-      const lunch = selectRecipe(lunchRecipes, selectedIds, targetCuisines[0], adventureBoost, selected);
+      // Select lunch (with ingredient overlap scoring + ratings + schedules)
+      const lunch = selectRecipe(lunchRecipes, selectedIds, targetCuisines[0], adventureBoost, selected, weekIndex, scheduledIds);
       if (lunch) {
         selected.push(lunch);
         selectedIds.add(lunch.id);
       }
 
-      // Select dinner (with ingredient overlap scoring)
-      const dinner = selectRecipe(dinnerRecipes, selectedIds, targetCuisines[1], adventureBoost, selected);
+      // Select dinner (with ingredient overlap scoring + ratings + schedules)
+      const dinner = selectRecipe(dinnerRecipes, selectedIds, targetCuisines[1], adventureBoost, selected, weekIndex, scheduledIds);
       if (dinner) {
         selected.push(dinner);
         selectedIds.add(dinner.id);
@@ -172,9 +241,11 @@
     return [shuffled[lunchIdx], shuffled[dinnerIdx]];
   }
 
-  function selectRecipe(pool, excludeIds, preferredCuisine, adventureBoost, selectedSoFar) {
+  function selectRecipe(pool, excludeIds, preferredCuisine, adventureBoost, selectedSoFar, weekIndex, scheduledIds) {
     const available = pool.filter(r => !excludeIds.has(r.id));
     if (available.length === 0) return null;
+
+    const ratings = loadRatings();
 
     // Score recipes
     const scored = available.map(r => {
@@ -198,6 +269,17 @@
       // with those already selected for this week (reduces waste, maximises freshness)
       const overlap = ingredientOverlapScore(r, selectedSoFar || []);
       score += overlap * 4; // each shared ingredient adds significant weight
+
+      // RATING BONUS/PENALTY
+      const rating = ratings[r.id] || 0;
+      if (rating === -1) score -= 20;  // thumbs-down: strongly avoid
+      if (rating === 1) score += 5;    // thumbs-up: mild preference
+      if (rating === 2) score += 8;    // double thumbs-up: strong preference
+
+      // SCHEDULED RECIPE BOOST
+      if (scheduledIds && scheduledIds.includes(r.id)) {
+        score += 50; // guaranteed to appear
+      }
 
       return { recipe: r, score };
     });
@@ -438,6 +520,8 @@
 
     const modal = document.getElementById("recipe-modal");
     const detail = document.getElementById("recipe-detail");
+    const ratings = loadRatings();
+    const currentRating = ratings[recipe.id] || 0;
 
     detail.innerHTML = `
       <h2 class="recipe-title">${recipe.name}</h2>
@@ -452,7 +536,7 @@
         <h3>Ingredients</h3>
         <ul>
           ${recipe.ingredients.map(i => `
-            <li>${i.item} - ${i.qty} <span style="font-size:0.75rem; color:var(--clr-text-light)">(${STORES[getStoreForIngredient(i)].name})</span></li>
+            <li>${i.item} - ${i.qty}</li>
           `).join("")}
         </ul>
       </div>
@@ -480,6 +564,18 @@
         <span class="recipe-video-placeholder">No video available yet</span>
       </div>
       `}
+
+      <div class="recipe-rating-section">
+        <span class="recipe-rating-label">How did your little eaters like this?</span>
+        <div class="recipe-rating-buttons" id="recipe-rating-buttons">
+          <button class="rating-btn ${currentRating === -1 ? "active dislike" : ""}" data-rating="-1" title="Didn't like it">&#128078;</button>
+          <button class="rating-btn ${currentRating === 1 ? "active like" : ""}" data-rating="1" title="Liked it">&#128077;</button>
+          <button class="rating-btn ${currentRating === 2 ? "active love" : ""}" data-rating="2" title="Loved it!">&#128077;&#128077;</button>
+        </div>
+        ${currentRating === -1 ? '<span class="rating-feedback dislike">Won\'t appear as often</span>' : ""}
+        ${currentRating === 1 ? '<span class="rating-feedback like">Great! Noted as a favourite</span>' : ""}
+        ${currentRating === 2 ? '<span class="rating-feedback love">Family favourite!</span>' : ""}
+      </div>
     `;
 
     // Attach video toggle handler
@@ -492,7 +588,65 @@
       });
     }
 
+    // Attach rating handlers
+    detail.querySelectorAll(".rating-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const rating = parseInt(btn.dataset.rating, 10);
+        const newRating = rateRecipe(recipe.id, rating);
+
+        // If double thumbs-up, show schedule modal
+        if (newRating === 2) {
+          showScheduleModal(recipe);
+        }
+
+        // Re-render the recipe detail to update button states
+        showRecipeDetail(recipe.id);
+      });
+    });
+
     modal.classList.remove("hidden");
+  }
+
+  // ─── SCHEDULE MODAL ──────────────────────────────
+
+  function showScheduleModal(recipe) {
+    const modal = document.getElementById("schedule-modal");
+    if (!modal) return;
+
+    document.getElementById("schedule-recipe-name").textContent = recipe.name;
+    document.getElementById("schedule-recurring-check").checked = false;
+
+    modal.classList.remove("hidden");
+
+    // Remove old listeners by cloning
+    const optionsContainer = modal.querySelector(".schedule-options");
+    const newOptions = optionsContainer.cloneNode(true);
+    optionsContainer.parentNode.replaceChild(newOptions, optionsContainer);
+
+    const skipBtn = document.getElementById("btn-schedule-skip");
+    const newSkip = skipBtn.cloneNode(true);
+    skipBtn.parentNode.replaceChild(newSkip, skipBtn);
+
+    // Attach option handlers
+    newOptions.querySelectorAll(".schedule-option").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const weeks = parseInt(btn.dataset.weeks, 10);
+        const recurring = document.getElementById("schedule-recurring-check").checked;
+        scheduleRecipe(recipe.id, weeks, recurring);
+        modal.classList.add("hidden");
+        const recurText = recurring ? ` (recurring every ${weeks} week${weeks > 1 ? "s" : ""})` : "";
+        showToast(`${recipe.name} scheduled in ${weeks} week${weeks > 1 ? "s" : ""}${recurText}`);
+      });
+    });
+
+    // Skip handler
+    newSkip.addEventListener("click", () => {
+      modal.classList.add("hidden");
+    });
+
+    // Close handlers
+    modal.querySelector(".modal-backdrop").addEventListener("click", () => modal.classList.add("hidden"));
+    modal.querySelector(".modal-close").addEventListener("click", () => modal.classList.add("hidden"));
   }
 
   // ─── PDF GENERATION ───────────────────────────────
@@ -563,8 +717,7 @@
         doc.setFontSize(9);
         doc.setTextColor(45, 45, 45);
         recipe.ingredients.forEach(ing => {
-          const store = STORES[getStoreForIngredient(ing)].name;
-          doc.text(`\u2022  ${ing.item} - ${ing.qty} (${store})`, 16, y);
+          doc.text(`\u2022  ${ing.item} - ${ing.qty}`, 16, y);
           y += 5;
         });
 

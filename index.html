@@ -79,7 +79,34 @@
     </div>
   </div>
 
-  <!-- ─── AUTH MODAL ───────────────────────────────── -->
+  <!-- ─── RECIPE SCHEDULE MODAL ─────────────────────── -->
+  <div id="schedule-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content schedule-modal-content">
+      <button class="modal-close">&times;</button>
+      <h2 class="schedule-title">Your family loved this!</h2>
+      <p class="schedule-subtitle" id="schedule-recipe-name"></p>
+      <p class="schedule-question">Would you like this recipe to appear again?</p>
+
+      <div class="schedule-options">
+        <button class="schedule-option" data-weeks="1">In 1 week</button>
+        <button class="schedule-option" data-weeks="2">In 2 weeks</button>
+        <button class="schedule-option" data-weeks="3">In 3 weeks</button>
+        <button class="schedule-option" data-weeks="4">In 4 weeks</button>
+      </div>
+
+      <div class="schedule-recurring">
+        <label class="pref-checkbox">
+          <input type="checkbox" id="schedule-recurring-check">
+          <span class="pref-checkbox-label">Repeat every time (recurring)</span>
+        </label>
+      </div>
+
+      <div class="schedule-actions">
+        <button id="btn-schedule-skip" class="btn btn-outline">No thanks</button>
+      </div>
+    </div>
+  </div>
   <div id="auth-modal" class="modal hidden">
     <div class="modal-backdrop"></div>
     <div class="modal-content auth-modal-content">
