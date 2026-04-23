@@ -1,0 +1,25 @@
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  image: node:18
+  script:
+    - cd client && npm ci && npm run build
+    - cp -r client/dist server/public
+    - cd .. && npm ci --omit=dev
+  artifacts:
+    paths:
+      - server/
+      - node_modules/
+      - package.json
+      - Procfile
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying to Rabbit Deploy GCC environment"
+    # Rabbit Deploy picks up the build artifacts automatically via GitLab integration
+  only:
+    - main

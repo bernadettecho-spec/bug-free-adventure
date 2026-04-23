@@ -1,0 +1,93 @@
+:root {
+  --color-cyan: #00C0F3;
+  --color-magenta: #BA2FA2;
+  --color-red: #F4333D;
+  --color-dark-grey: #3D3D3D;
+  --color-grey: #ADADAD;
+  --color-off-white: #F7F7F7;
+  --gradient-cyan-magenta: linear-gradient(135deg, #00C0F3, #BA2FA2);
+  --gradient-magenta-red: linear-gradient(135deg, #BA2FA2, #F4333D);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  background-color: var(--color-off-white);
+  color: var(--color-dark-grey);
+  margin: 0;
+  padding: 0;
+}
+
+.btn-primary {
+  background-color: var(--color-cyan);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: white;
+  color: var(--color-cyan);
+  border: 2px solid var(--color-cyan);
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-cyan);
+  color: white;
+}
+
+.badge-standing {
+  background-color: var(--color-cyan);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge-adhoc {
+  background-color: var(--color-magenta);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.gradient-header {
+  background: var(--gradient-cyan-magenta);
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 24px;
+}
+
+input, select, textarea {
+  font-family: 'Lato', sans-serif;
+}
